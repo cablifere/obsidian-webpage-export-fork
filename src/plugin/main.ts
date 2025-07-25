@@ -40,7 +40,7 @@ export default class HTMLExportPlugin extends Plugin {
 		// @ts-ignore
 		window.WebpageHTMLExport = this;
 
-		this.addSettingTab(new SettingsPage(ObsidianApp.app, this));
+		this.addSettingTab(new SettingsPage(this));
 		await SettingsPage.loadSettings();
 		await AssetHandler.initialize();
 
