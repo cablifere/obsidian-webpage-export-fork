@@ -54,6 +54,9 @@ export class HTMLExporter {
 				await Path.removeEmptyDirectories(destination.path);
 			}
 
+			// save assets
+			await Utils.downloadAttachments(website.index.assets);
+
 			// update metadata.json
 			await Utils.downloadAttachments([website.index.websiteDataAttachment()]);
 		}

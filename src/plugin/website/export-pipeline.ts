@@ -13,7 +13,6 @@ export class WebsiteExportPipeline {
 		const pipeline = new WebsiteExportPipeline();
 		pipeline.options = options;
 		pipeline.files = app.vault.getFiles();
-		pipeline.assets = [];
 		pipeline.attachments = [];
 
 		return pipeline;

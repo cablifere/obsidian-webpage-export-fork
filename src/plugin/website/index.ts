@@ -23,12 +23,12 @@ export class Index {
 
 	public webpages: Webpage[] = [];
 	public attachments: Attachment[] = [];
+	public assets: Attachment[] = [];
 
 	public oldWebsiteData: WebsiteData | undefined = undefined;
 	public websiteData: WebsiteData = {} as WebsiteData;
 
 	public deletedFiles: string[] = [];
-	public updatedFiles: Attachment[] = [];
 	public allFiles: Attachment[] = [];
 
 	public async load(website: Website, options: ExportPipelineOptions) {
@@ -104,8 +104,15 @@ export class Index {
 
 		this.deletedFiles.remove(file.targetPath.path);
 
-		if(!this.hadFile(key) || (file.hash !== "" && file.hash !== "d41d8cd98f00b204e9800998ecf8427e" && file.hash !== this.getOldFile(key)?.hash)) {
-			isUpdated = true;
+		const isAsset = file.targetPath.path.includes(Shared.libFolderName);
+		const isUninitialized = file.hash === "";
+		const isEmpty = file.hash === "d41d8cd98f00b204e9800998ecf8427e";
+		const isExisting = this.hadFile(key);
+
+		if (!isEmpty && !isUninitialized && !isAsset) {
+			if (!isExisting || (isExisting && file.hash !== this.getOldFile(key)?.hash)) {
+				isUpdated = true;
+			}
 		}
 
 		// add the file to the list of all files
@@ -123,6 +130,8 @@ export class Index {
 
 		if (file instanceof Webpage) {
 			await this.updateWebpage(file);
+		} else if (isAsset && !isExisting) {
+			this.updateAsset(file);
 		} else if (isUpdated) {
 			this.updateAttachment(file);
 		}
@@ -274,6 +283,36 @@ export class Index {
 
 		if (!this.attachments.includes(attachment)) {
 			this.attachments.push(attachment);
+		}
+	}
+
+	private addAssetToWebsiteData(attachment: Attachment): string {
+		const exportPath = attachment.targetPath.path;
+		const key = exportPath;
+
+		if (this.websiteData) {
+			const fileInfo: FileData = {} as FileData;
+			fileInfo.createdTime = attachment.sourceStat.ctime;
+			fileInfo.modifiedTime = attachment.sourceStat.mtime;
+			fileInfo.sourceSize = attachment.sourceStat.size;
+			fileInfo.sourcePath = attachment.sourcePath ?? "";
+			fileInfo.exportPath = exportPath;
+			fileInfo.type = AssetLoader.extensionToType(attachment.targetPath.extension);
+			fileInfo.data = null;
+			fileInfo.hash = attachment.hash;
+
+			this.websiteData.fileInfo[key] = fileInfo;
+			this.websiteData.sourceToTarget[fileInfo.sourcePath] = fileInfo.exportPath;
+		}
+
+		return key;
+	}
+
+	private updateAsset(attachment: Attachment) {
+		this.addAssetToWebsiteData(attachment);
+
+		if (!this.assets.includes(attachment)) {
+			this.assets.push(attachment);
 		}
 	}
 
