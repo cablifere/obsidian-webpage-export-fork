@@ -1,10 +1,8 @@
 import { Attachment } from "src/plugin/utils/downloadable";
-import { TAbstractFile, TFile, TFolder } from "obsidian";
+import { App, TFile } from "obsidian";
 import { Settings } from "src/plugin/settings/settings";
 import { Path } from "src/plugin/utils/path";
 import { ExportLog, MarkdownRendererAPI } from "src/plugin/render-api/render-api";
-import { AssetLoader } from "src/plugin/asset-loaders/base-asset";
-import { AssetType, InlinePolicy, Mutability } from "src/plugin/asset-loaders/asset-types.js";
 import { ExportPipelineOptions } from "src/plugin/website/pipeline-options.js";
 import { Index as WebsiteIndex } from "src/plugin/website/index";
 import { WebpageTemplate } from "./webpage-template";
@@ -12,6 +10,7 @@ import { AssetHandler } from "src/plugin/asset-loaders/asset-handler";
 import { Webpage } from "./webpage";
 import { Utils } from "src/plugin/utils/utils";
 import { InsertedFeatureOptions, FeatureRelation, RelationType } from "src/shared/features/feature-options-base";
+import ObsidianApp from "src/shared/app";
 
 export class Website {
 	public destination: Path;
@@ -193,9 +192,9 @@ export class Website {
 	private validateSettings() {
 		// if iconize plugin is installed, warn if note icons are not enabled
 		// @ts-ignore
-		if (app.plugins?.enabledPlugins?.has("obsidian-icon-folder")) {
+		if (ObsidianApp.app.plugins?.enabledPlugins?.has("obsidian-icon-folder")) {
 			// @ts-ignore
-			const fileToIconName = app.plugins?.plugins?.['obsidian-icon-folder']?.data;
+			const fileToIconName = ObsidianApp.app.plugins?.plugins?.['obsidian-icon-folder']?.data;
 			const noteIconsEnabled = fileToIconName?.settings?.iconsInNotesEnabled ?? false;
 			if (!noteIconsEnabled)
 			{
@@ -205,9 +204,9 @@ export class Website {
 
 		// if excalidraw installed and the embed mode is not set to Native SVG, warn
 		// @ts-ignore
-		if (app.plugins?.enabledPlugins?.has("obsidian-excalidraw-plugin")) {
+		if (ObsidianApp.app.plugins?.enabledPlugins?.has("obsidian-excalidraw-plugin")) {
 			// @ts-ignore
-			const embedMode = app.plugins?.plugins?.['obsidian-excalidraw-plugin']?.settings?.['previewImageType'] ?? "";
+			const embedMode = ObsidianApp.app.plugins?.plugins?.['obsidian-excalidraw-plugin']?.settings?.['previewImageType'] ?? "";
 			if (embedMode != "SVG") {
 				ExportLog.warning("For Excalidraw embed support, set the embed mode to \"Native SVG\" in the Excalidraw plugin settings.");
 			}
@@ -215,9 +214,9 @@ export class Website {
 
 		// the plugin only supports the banner plugin above version 2.0.5
 		// @ts-ignore
-		if (app.plugins?.enabledPlugins?.has("obsidian-banners")) {
+		if (ObsidianApp.app.plugins?.enabledPlugins?.has("obsidian-banners")) {
 			// @ts-ignore
-			const bannerPlugin = app.plugins?.plugins?.['obsidian-banners'];
+			const bannerPlugin = ObsidianApp.app.plugins?.plugins?.['obsidian-banners'];
 			let version = bannerPlugin?.manifest?.version ?? "0.0.0";
 			version = version?.substring(0, 5);
 			if (version < "2.0.5") {
@@ -255,7 +254,7 @@ export class Website {
 		const attachedFile = this.getFilePathFromSrc(src, sourceFile.path);
 		if (attachedFile.isDirectory) return;
 
-		const file = app.vault.getFileByPath(attachedFile.pathname);
+		const file = ObsidianApp.app.vault.getFileByPath(attachedFile.pathname);
 		let path = file?.path ?? "";
 		if (!file) path = AssetHandler.mediaPath.joinString(attachedFile.fullName).path;
 		const data: Buffer | undefined = await attachedFile.readAsBuffer();
@@ -277,7 +276,7 @@ export class Website {
 			let fail = false;
 			try {
 				// @ts-ignore
-				pathString = app.vault.resolveFileUrl(src)?.path ?? "";
+				pathString = ObsidianApp.app.vault.resolveFileUrl(src)?.path ?? "";
 				if (pathString == "") fail = true;
 			} catch {
 				fail = true;
@@ -294,7 +293,7 @@ export class Website {
 
 			const hash = split[1]?.trim();
 			const path = split[0];
-			pathString = app.metadataCache.getFirstLinkpathDest(path, exportingFilePath)?.path ?? "";
+			pathString = ObsidianApp.app.metadataCache.getFirstLinkpathDest(path, exportingFilePath)?.path ?? "";
 			if (hash) {
 				pathString += "#" + hash;
 			}

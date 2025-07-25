@@ -6,6 +6,7 @@ import { homedir, platform } from 'os';
 import { readdir, rmdir } from 'fs/promises';
 import { i18n } from '../translations/language';
 import { ExportLog } from '../render-api/render-api';
+import ObsidianApp from 'src/shared/app';
 
 export class Path {
 	private static logQueue: { title: string, message: any, type: "info" | "warn" | "error" | "fatal" }[] = [];
@@ -43,7 +44,7 @@ export class Path {
 
 	public reparse(path: string): Path {
 		let parsed = Path.parsePath(path);
-		if (path == "") parsed = { root: "", dir: "", parent: "", base: "", ext: "", name: "", fullPath: ""}
+		if (path === "") parsed = { root: "", dir: "", parent: "", base: "", ext: "", name: "", fullPath: ""}
 
 		for (const key in parsed) {
 			if (this._useBackslashes) {
@@ -63,8 +64,8 @@ export class Path {
 		this._hash = parsed.ext.split("#")[1] ?? "";
 		this._name = parsed.name;
 		this._fullPath = parsed.fullPath;
-		this._isDirectory = this._ext == "";
-		this._isFile = this._ext != "";
+		this._isDirectory = this._ext === "";
+		this._isFile = this._ext !== "";
 		this._exists = undefined;
 		this._sourceString = path;
 
@@ -146,7 +147,7 @@ export class Path {
 		for (let i = 0; i < fullPath.length; i++) {
 			const fullChar = fullPath.charAt(i);
 			const workingChar = this.workingDirectory.charAt(i);
-			if (fullChar == workingChar && !reachedEndOfWorkingDir) {
+			if (fullChar === workingChar && !reachedEndOfWorkingDir) {
 				newWorkingDir += fullChar;
 				continue;
 			}
@@ -203,7 +204,7 @@ export class Path {
 	}
 
 	makePlatformSafe(): Path {
-		if (platform() == "win32") return this.backslashify();
+		if (platform() === "win32") return this.backslashify();
 		return this;
 	}
 
@@ -295,7 +296,7 @@ export class Path {
 	 * Same as dir, but if the path is a directory this will be the parent directory not the full path.
 	 */
 	get parent(): Path | undefined {
-		if (this._parent == "") return;
+		if (this._parent === "") return;
 		const newPath = this.copy;
 		newPath.reparse(this._parent);
 		return newPath;
@@ -373,11 +374,11 @@ export class Path {
 
 		for (let i = 0; i < splits.length-1; i++)
 		{
-			if (splits[i] == "..")
+			if (splits[i] === "..")
 			{
 				depth--;
 			}
-			else if (splits[i] != ".")
+			else if (splits[i] !== ".")
 			{
 				depth++;
 			}
@@ -403,19 +404,19 @@ export class Path {
 
 		for (let i = 0; i < splits.length-1; i++)
 		{
-			if (splits[i] == "..")
+			if (splits[i] === "..")
 			{
 				depth--;
-				if (initialDirection == 0) initialDirection = -1;
+				if (initialDirection === 0) initialDirection = -1;
 			}
-			else if (splits[i] != ".")
+			else if (splits[i] !== ".")
 			{
 				depth++;
-				if (initialDirection == 0) initialDirection = 1;
+				if (initialDirection === 0) initialDirection = 1;
 			}
 
-			if (initialDirection == -1 && depth < maxDepth) maxDepth = depth;
-			if (initialDirection == 1 && depth > maxDepth) maxDepth = depth;
+			if (initialDirection === -1 && depth < maxDepth) maxDepth = depth;
+			if (initialDirection === 1 && depth > maxDepth) maxDepth = depth;
 		}
 
 		if (this.isAbsolute) maxDepth--;
@@ -482,7 +483,7 @@ export class Path {
 	 * AKA is the path just referencing its working directory.
 	 */
 	get isEmpty(): boolean {
-		return this.path == "";
+		return this.path === "";
 	}
 
 	/**
@@ -516,7 +517,7 @@ export class Path {
 	 * True if the file or folder exists on the filesystem.
 	 */
 	get exists(): boolean {
-		if(this._exists == undefined) {
+		if(this._exists === undefined) {
 			try {
 				const absPath = this.absoluted().pathname;
 				this._exists = Path.pathExists(absPath);
@@ -551,7 +552,7 @@ export class Path {
 		if (asString.startsWith("http:") || asString.startsWith("https:")) return true;
 		if (asString.startsWith("file://")) return true;
 
-		if(platform() == "win32") {
+		if(platform() === "win32") {
 			asString = asString.replaceAll("/", "\\");
 			if (asString.startsWith("\\\\")) return true;
 			if (asString.match(/^[A-Za-z]:\\/)) return true;
@@ -583,7 +584,7 @@ export class Path {
 	validate(options: {allowEmpty?: boolean, requireExists?: boolean, allowAbsolute?: boolean, allowRelative?: boolean, allowTildeHomeDirectory?: boolean, allowFiles?: boolean, allowDirectories?: boolean, requireExtensions?: string[]}): {valid: boolean, isEmpty: boolean, error: string} {
 		let error = "";
 		let valid = true;
-		const isEmpty = this.sourceString.trim() == "";
+		const isEmpty = this.sourceString.trim() === "";
 
 		// remove dots from requireExtension
 		options.requireExtensions = options.requireExtensions?.map(e => e.replace(".", "")) ?? [];
@@ -739,7 +740,7 @@ export class Path {
 		let parent = parsed.dir;
 		let fullPath = "";
 
-		if(path.endsWith("/") || path.endsWith("\\") || parsed.ext == "") {
+		if(path.endsWith("/") || path.endsWith("\\") || parsed.ext === "") {
 			if (path.endsWith("/") || path.endsWith("\\")) path = path.substring(0, path.length - 1);
 
 			parsed.dir = pathTools.normalizeSafe(path);
@@ -753,7 +754,7 @@ export class Path {
 			fullPath = pathTools.join(parent, parsed.base);
 		}
 
-		if (args && args.trim() != "") fullPath += "?" + args;
+		if (args && args.trim() !== "") fullPath += "?" + args;
 
 		if(fullPath.startsWith("http:")) parsed.root = "http://";
 		else if(fullPath.startsWith("https:")) parsed.root = "https://";
@@ -814,11 +815,10 @@ export class Path {
 
 	private static vaultPathCache: Path | undefined = undefined;
 	static get vaultPath(): Path {
-		if (this.vaultPathCache != undefined) return this.vaultPathCache;
+		if (this.vaultPathCache !== undefined) return this.vaultPathCache;
 
-		const adapter = app.vault.adapter;
-		if (adapter instanceof FileSystemAdapter)
-		{
+		const adapter = ObsidianApp.app.vault.adapter;
+		if (adapter instanceof FileSystemAdapter) {
 			const basePath = adapter.getBasePath() ?? "";
 			this.vaultPathCache = new Path(basePath, "");
 			return this.vaultPathCache;
@@ -829,10 +829,9 @@ export class Path {
 
 	private static vaultConfigDirCache: Path | undefined = undefined;
 	static get vaultConfigDir(): Path {
-		if (this.vaultConfigDirCache == undefined) {
-			this.vaultConfigDirCache = new Path(app.vault.configDir, "");
+		if (this.vaultConfigDirCache === undefined) {
+			this.vaultConfigDirCache = new Path(ObsidianApp.app.vault.configDir, "");
 		}
-
 		return this.vaultConfigDirCache;
 	}
 

@@ -2,6 +2,7 @@ import webpageStyles from "src/assets/plugin-styles.txt.css";
 import deferredCSS from "src/assets/deferred.txt.css";
 import themeLoadJS from "src/assets/theme-load.txt.js";
 
+import ObsidianApp from 'src/shared/app.js';
 import { Path } from "src/plugin/utils/path.js";
 import { AssetLoader } from "./base-asset.js";
 import { AssetType, InlinePolicy, LoadMethod, Mutability } from "./asset-types.js";
@@ -87,7 +88,6 @@ export class AssetHandler {
 	public static deferredCSS: AssetLoader;
 
 	// scripts
-	public static websiteJS: WebsiteJS;
 	public static themeLoadJS: AssetLoader;
 
 	// other
@@ -103,7 +103,7 @@ export class AssetHandler {
 		this.cssFolder = this.libraryFolder.joinString(Shared.cssFolderName);
 		this.fontFolder = this.libraryFolder.joinString(Shared.fontFolderName);
 		this.htmlFolder = this.libraryFolder.joinString(Shared.htmlFolderName);
-		this.vaultPluginsPath = Path.vaultPath.joinString(app.vault.configDir, "plugins/").absolute();
+		this.vaultPluginsPath = Path.vaultPath.joinString(ObsidianApp.app.vault.configDir, "plugins/").absolute();
 	}
 
 	public static async initialize() {
@@ -114,7 +114,6 @@ export class AssetHandler {
 		this.mathjaxStyles = new MathjaxStyles();
 		this.globalDataStyles = new GlobalVariableStyles();
 		this.supportedPluginStyles = new SupportedPluginStyles();
-		this.websiteJS = new WebsiteJS();
 		this.websiteStyles = new AssetLoader("main-styles.css", webpageStyles, null, AssetType.Style, InlinePolicy.AutoHead, true, Mutability.Static, LoadMethod.Async, 4);
 		this.deferredCSS = new AssetLoader("deferred.css", deferredCSS, null, AssetType.Style, InlinePolicy.InlineHead, true, Mutability.Static, LoadMethod.Defer, -1000);
 		this.themeLoadJS = new AssetLoader("theme-load.js", themeLoadJS, null, AssetType.Script, InlinePolicy.Inline, true, Mutability.Static, LoadMethod.Defer);

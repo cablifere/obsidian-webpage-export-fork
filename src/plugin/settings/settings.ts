@@ -9,6 +9,7 @@ import { i18n } from '../translations/language';
 import { EmojiStyle } from 'src/shared/website-data';
 import supportedStyleIds from "src/assets/plugin-style-ids.json";
 import safeParser from 'postcss-safe-parser';
+import ObsidianApp from 'src/shared/app';
 
 // #region Settings Definition
 
@@ -385,7 +386,7 @@ export class SettingsPage extends PluginSettingTab {
 	}
 
 	constructor(plugin: Plugin) {
-		super(app, plugin);
+		super(ObsidianApp.app, plugin);
 		SettingsPage.plugin = plugin;
 	}
 

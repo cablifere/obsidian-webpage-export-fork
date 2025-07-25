@@ -1,5 +1,5 @@
 import { MarkdownRendererOptions } from "./api-options";
-import { Component, Notice, WorkspaceLeaf, MarkdownRenderer as ObsidianRenderer, MarkdownPreviewView, loadMermaid, TFile, MarkdownView, View, TAbstractFile, TFolder } from "obsidian";
+import { App, Component, Notice, WorkspaceLeaf, MarkdownRenderer as ObsidianRenderer, MarkdownPreviewView, loadMermaid, TFile, MarkdownView, View, TAbstractFile, TFolder } from "obsidian";
 import { TabManager } from "src/plugin/utils/tab-manager";
 import * as electron from 'electron';
 import { Settings, SettingsPage } from "src/plugin/settings/settings";
@@ -8,6 +8,7 @@ import { SimpleFileListGenerator } from "src/plugin/features/simple-list-generat
 import { DataviewRenderer } from "./dataview-renderer";
 import { Utils } from "../utils/utils";
 import { IconHandler } from "../utils/icon-handler";
+import ObsidianApp from "src/shared/app";
 
 export namespace MarkdownRendererAPI {
 	export const viewableMediaExtensions = ["png", "jpg", "jpeg", "svg", "gif", "bmp", "ico", "mp4", "mov", "avi", "webm", "mpeg", "mp3", "wav", "ogg", "aac", "pdf", "html", "htm", "json", "txt", "yaml"];
@@ -418,7 +419,7 @@ export namespace _MarkdownRendererInternal {
 	export async function renderSimpleMarkdown(markdown: string, container: HTMLElement) {
 		const renderComp = new Component();
 		renderComp.load();
-		await ObsidianRenderer.render(app, markdown, container, "/", renderComp);
+		await ObsidianRenderer.render(ObsidianApp.app, markdown, container, "/", renderComp);
 		renderComp.unload();
 
 		const renderedEl = container.children[container.children.length - 1];
@@ -475,12 +476,12 @@ export namespace _MarkdownRendererInternal {
 
 		if (useFile instanceof TFolder) {
 			// look for icon property on a file inside the folder with the same name as the folder
-			let childFile = app.vault.getFileByPath(file.path + "/" + file.name + ".md");
+			let childFile = ObsidianApp.app.vault.getFileByPath(file.path + "/" + file.name + ".md");
 			if (childFile) useFile = childFile;
 		}
 
 		if (useFile instanceof TFile) {
-			const fileCache = app.metadataCache.getFileCache(useFile);
+			const fileCache = ObsidianApp.app.metadataCache.getFileCache(useFile);
 			const frontmatter = fileCache?.frontmatter;
 			iconProperty = frontmatter?.icon ?? frontmatter?.sticker ?? frontmatter?.banner_icon; // banner plugin support
 		}
@@ -494,7 +495,7 @@ export namespace _MarkdownRendererInternal {
 		//@ts-ignore
 		if ((useDefaultIcon || !iconProperty || isUnchangedNotEmojiNotHTML) && app?.plugins?.enabledPlugins?.has("obsidian-icon-folder")) {
 			//@ts-ignore
-			const fileToIconName = app.plugins.plugins['obsidian-icon-folder'].data;
+			const fileToIconName = ObsidianApp.app.plugins.plugins['obsidian-icon-folder'].data;
 			const noteIconsEnabled = fileToIconName.settings.iconsInNotesEnabled ?? false;
 
 			// only add icon if rendering note icons is enabled
@@ -509,7 +510,7 @@ export namespace _MarkdownRendererInternal {
 
 				if (iconProperty && typeof iconProperty === "string" && iconProperty.trim() !== "") {
 					if (file instanceof TFile)
-						app.fileManager.processFrontMatter(file, (frontmatter) => {
+						ObsidianApp.app.fileManager.processFrontMatter(file, (frontmatter) => {
 							frontmatter.icon = iconProperty;
 						});
 
@@ -533,7 +534,7 @@ export namespace _MarkdownRendererInternal {
 		let title = file.name;
 		let isDefaultTitle = true;
 		if (file instanceof TFile) {
-			const fileCache = app.metadataCache.getFileCache(file);
+			const fileCache = ObsidianApp.app.metadataCache.getFileCache(file);
 			const frontmatter = fileCache?.frontmatter;
 			const titleFromFrontmatter = frontmatter?.[Settings.titleProperty] ?? frontmatter?.["banner_header"]; // banner plugin support
 			title = (titleFromFrontmatter ?? file.basename).toString() ?? "";
@@ -1104,7 +1105,7 @@ export namespace ExportLog {
 		debugInfo += `Settings:\n${humanReadableJSON({ ...Settings })}\n\n`;
 
 		// @ts-ignore
-		const loadedPlugins = Object.values(app.plugins.plugins).filter((plugin) => plugin._loaded === true).map((plugin) => plugin.manifest.name).join("\n\t");
+		const loadedPlugins = Object.values(ObsidianApp.app.plugins.plugins).filter((plugin) => plugin._loaded === true).map((plugin) => plugin.manifest.name).join("\n\t");
 		debugInfo += `Enabled Plugins:\n\t${loadedPlugins}`;
 
 		return debugInfo;

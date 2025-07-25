@@ -33,7 +33,7 @@ export class WebpageDocument {
 
 	public initialized: boolean = false;
 	public get isMainDocument(): boolean {
-		return this.parent == null && !this.isPreview;
+		return this.parent ===  null && !this.isPreview;
 	}
 
 	public get bounds(): Bounds {
@@ -66,7 +66,7 @@ export class WebpageDocument {
 		this.hash = LinkHandler.getHashFromURL(url);
 		this.query = LinkHandler.getQueryFromURL(url);
 		let origin = window?.location?.origin;
-		if (origin == "null") origin = "file://";
+		if (origin ===  "null") origin = "file://";
 
 		// load webpage data
 		this.info = ObsidianSite.getWebpageData(this.pathname) as WebpageData;
@@ -94,20 +94,16 @@ export class WebpageDocument {
 		return null;
 	}
 
-	public getFlatHeaders(): Header[] {
-		return this.headers.flatMap((h) => h.getFlatChildren());
-	}
-
 	public scrollToHeader(headerId: string) {
 		console.log("Scrolling to header", headerId);
-		const header = this.findHeader((h) => h.id == headerId);
+		const header = this.findHeader((h) => h.id ===  headerId);
 		if (header) header.scrollTo();
 	}
 
 	private findElements() {
 		if (!this.containerEl) this.containerEl = ObsidianSite.centerContentEl;
 		this.sizerEl = (
-			this.documentType == DocumentType.Markdown
+			this.documentType ===  DocumentType.Markdown
 				? this.containerEl.querySelector(".markdown-preview-sizer")
 				: undefined
 		) as HTMLElement;
@@ -133,7 +129,6 @@ export class WebpageDocument {
 
 		if (!this.pathname || !this.exists) return this;
 
-		let oldDocument = ObsidianSite.document;
 		await ObsidianSite.showLoading(true, containerEl);
 
 		this.containerEl = containerEl;
@@ -160,7 +155,7 @@ export class WebpageDocument {
 			await this.loadChildDocuments();
 			await this.postLoadInit();
 
-			if (this.sizerEl && headerOnly && this.hash && this.hash != "") {
+			if (this.sizerEl && headerOnly && this.hash && this.hash !==  "") {
 				var header = this.headers
 					.find((h) => h.findByID(this.hash))
 					?.findByID(this.hash);
@@ -182,8 +177,7 @@ export class WebpageDocument {
 		return this;
 	}
 
-	public async show()
-	{
+	public async show() {
 		await ObsidianSite.showLoading(false, this.containerEl);
 	}
 
@@ -243,6 +237,7 @@ export class WebpageDocument {
 				"link[itemprop='include-document']"
 			)
 		);
+
 		const promises: Promise<WebpageDocument | undefined>[] = [];
 		for (const ref of childRefs) {
 			const url = ref.getAttribute("href");
@@ -258,7 +253,7 @@ export class WebpageDocument {
 
 		const childrenTemp = await Promise.all(promises);
 		console.log("Loaded child documents", childrenTemp);
-		this.children.push(...childrenTemp.filter((c) => c != undefined) as WebpageDocument[]);
+		this.children.push(...childrenTemp.filter((c) => c !==  undefined) as WebpageDocument[]);
 	}
 
 	public async loadChild(
@@ -269,17 +264,5 @@ export class WebpageDocument {
 		let loaded = await child.load(this, containerEl);
 		if (loaded) this.children.push(loaded);
 		return loaded;
-	}
-
-	public async unloadChild(child: WebpageDocument) {
-		this.children = this.children.filter((c) => c != child);
-		child.documentEl?.remove();
-	}
-
-	public getMinReadableWidth(): number {
-		const fontSize = parseFloat(
-			getComputedStyle(this.sizerEl ?? this.documentEl).fontSize
-		);
-		return fontSize * 30;
 	}
 }

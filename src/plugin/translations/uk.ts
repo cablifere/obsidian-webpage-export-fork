@@ -17,8 +17,7 @@ export const language: i18n = {
 	},
 	updateAvailable: "Доступне оновлення",
 	exportAsHTML: "Експортувати як HTML",
-	settings:
-	{
+	settings: {
 		title: "Налаштування експорту HTML",
 		support: "Підтримайте подальшу розробку цього плагіна.",
 		debug: "Копіювати відлагоджувальну інформацію в буфер обміну",
@@ -29,12 +28,13 @@ export const language: i18n = {
 			info_displayTitle: "Описовий заголовок для відображення над функцією",
 			info_featurePlacement: "Де розмістити цю функцію на сторінці (відносно селектора).",
 		},
-		document: {
+		documentWidth: {
 			title: "Документ",
-			description: "Керування налаштуваннями самого документа",
-			info_allowFoldingLists: "Дозволити чи заборонити згортання списків",
-			info_allowFoldingHeadings: "Дозволити чи заборонити згортання заголовків",
-			info_documentWidth: "Ширина документа"
+			description: "Ширина документа"
+		},
+		customHeadSourcePath: {
+			title: "",
+			description: ""
 		},
 		styleOptionsSection: {
 			title: "Параметри стилю",
@@ -43,6 +43,50 @@ export const language: i18n = {
 		makeOfflineCompatible: {
 			title: "Зробити сумісним офлайн",
 			description: "Завантажити будь-які онлайн-ресурси / зображення / скрипти, щоб сторінку можна було переглядати офлайн. Або щоб веб-сайт не залежав від CDN."
+		},
+		addHeadTag: {
+			title: "",
+			description: "",
+		},
+		addBodyClasses: {
+			title: "",
+			description: "",
+		},
+		addMathjaxStyles: {
+			title: "",
+			description: "",
+		},
+		flattenExportPaths: {
+			title: "",
+			description: ""
+		},
+		includeJs: {
+			title: "",
+			description: ""
+		},
+		includeCss: {
+			title: "",
+			description: ""
+		},
+		inlineMedia: {
+			title: "",
+			description: ""
+		},
+		inlineJs: {
+			title: "",
+			description: ""
+		},
+		inlineCss: {
+			title: "",
+			description: ""
+		},
+		inlineFonts: {
+			title: "",
+			description: ""
+		},
+		inlineOther: {
+			title: "",
+			description: ""
 		},
 		includePluginCSS: {
 			title: "Включити CSS з плагінів",
@@ -72,10 +116,6 @@ export const language: i18n = {
 			title: "Тема",
 			description: "Встановлена тема для використання при експорті",
 		},
-		exportSettingsSection: {
-			title: "Налаштування експорту",
-			description: "Керування більш технічними налаштуваннями експорту, такими як генерація посилань",
-		},
 		relativeHeaderLinks: {
 			title: "Використовувати відносні посилання заголовків",
 			description: "Використовувати відносні посилання для заголовків замість абсолютних",
@@ -88,6 +128,10 @@ export const language: i18n = {
 			title: "Додати іконку сторінки",
 			description: "Додати іконку файлу до заголовка сторінки",
 		},
+		unifyTitleFormat: {
+			title: "",
+			description: "",
+		},
 		logLevel: {
 			title: "Рівень журналювання",
 			description: "Встановити рівень журналювання для відображення в консолі",
@@ -96,5 +140,13 @@ export const language: i18n = {
 			title: "Властивість заголовка",
 			description: "Властивість для використання як заголовок документа",
 		},
+		exportPath: {
+			title: "",
+			description: "",
+		},
+		exportBlacklist: {
+			title: "",
+			description: "",
+		}
 	}
 }

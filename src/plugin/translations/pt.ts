@@ -4,8 +4,7 @@ export const language: i18n = {
 	cancel: "Cancelar",
 	browse: "Procurar",
 	pathInputPlaceholder: "Digite ou procure um caminho...",
-	pathValidations:
-	{
+	pathValidations: {
 		noEmpty: "O caminho não pode estar vazio",
 		mustExist: "O caminho não existe",
 		noTilde: "Diretório inicial com til (~) não é permitido",
@@ -29,12 +28,13 @@ export const language: i18n = {
 			info_displayTitle: "Título descritivo a ser exibido acima do recurso",
 			info_featurePlacement: "Onde posicionar esse recurso na página. (Relativo ao seletor)",
 		},
-		document: {
+		documentWidth: {
 			title: "Documento",
-			description: "Controle configurações do próprio documento",
-			info_allowFoldingLists: "Permitir que listas sejam recolhidas",
-			info_allowFoldingHeadings: "Permitir que cabeçalhos sejam recolhidos",
-			info_documentWidth: "A largura do documento"
+			description: "A largura do documento"
+		},
+		customHeadSourcePath: {
+			title: "",
+			description: ""
 		},
 		styleOptionsSection: {
 			title: "Opções de Estilo",
@@ -43,6 +43,50 @@ export const language: i18n = {
 		makeOfflineCompatible: {
 			title: "Tornar Compatível com Modo Offline",
 			description: "Baixar recursos / imagens / scripts online para que a página funcione offline. Ou evitar dependência de CDNs."
+		},
+		addHeadTag: {
+			title: "",
+			description: "",
+		},
+		addBodyClasses: {
+			title: "",
+			description: "",
+		},
+		addMathjaxStyles: {
+			title: "",
+			description: "",
+		},
+		flattenExportPaths: {
+			title: "",
+			description: ""
+		},
+		includeJs: {
+			title: "",
+			description: ""
+		},
+		includeCss: {
+			title: "",
+			description: ""
+		},
+		inlineMedia: {
+			title: "",
+			description: ""
+		},
+		inlineJs: {
+			title: "",
+			description: ""
+		},
+		inlineCss: {
+			title: "",
+			description: ""
+		},
+		inlineFonts: {
+			title: "",
+			description: ""
+		},
+		inlineOther: {
+			title: "",
+			description: ""
 		},
 		includePluginCSS: {
 			title: "Incluir CSS de Plugins",
@@ -72,10 +116,6 @@ export const language: i18n = {
 			title: "Tema",
 			description: "Tema instalado a ser usado na exportação",
 		},
-		exportSettingsSection: {
-			title: "Configurações de Exportação",
-			description: "Configurações técnicas como controle de geração de links",
-		},
 		relativeHeaderLinks: {
 			title: "Usar Links Relativos para Cabeçalhos",
 			description: "Utiliza links relativos em vez de absolutos para cabeçalhos",
@@ -88,6 +128,10 @@ export const language: i18n = {
 			title: "Adicionar Ícone à Página",
 			description: "Adiciona o ícone do arquivo ao cabeçalho da página",
 		},
+		unifyTitleFormat: {
+			title: "",
+			description: "",
+		},
 		logLevel: {
 			title: "Nível de Log",
 			description: "Define o nível de detalhamento nos logs do console",
@@ -96,5 +140,13 @@ export const language: i18n = {
 			title: "Propriedade de Título",
 			description: "Propriedade a ser usada como título do documento",
 		},
+		exportPath: {
+			title: "",
+			description: "",
+		},
+		exportBlacklist: {
+			title: "",
+			description: "",
+		}
 	}
 }

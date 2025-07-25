@@ -9,6 +9,7 @@ import { DocumentType } from "src/shared/website-data";
 import { Settings } from "src/plugin/settings/settings";
 import { AssetHandler } from "src/plugin/asset-loaders/asset-handler";
 import { Shared } from "src/shared/shared";
+import ObsidianApp from "src/shared/app";
 import { moment } from "obsidian";
 import md5 from "md5";
 
@@ -172,11 +173,10 @@ export class Webpage extends Attachment {
 	}
 
 	private get inlineTags(): string[] {
-		const tagCaches = app.metadataCache.getFileCache(this.source)?.tags?.values();
+		const tagCaches = ObsidianApp.app.metadataCache.getFileCache(this.source)?.tags?.values();
 		const tags: string[] = [];
-		if (tagCaches)
-		{
-			tags.push(...Array.from(tagCaches).map((tag) => tag.tag));
+		if (tagCaches) {
+			tags.push(...Array.from(tagCaches).map((tag: any) => tag.tag));
 		}
 
 		return tags;
@@ -336,7 +336,7 @@ export class Webpage extends Attachment {
 	}
 
 	private get frontmatter(): FrontMatterCache {
-		const frontmatter = app.metadataCache.getFileCache(this.source)?.frontmatter ?? {};
+		const frontmatter = ObsidianApp.app.metadataCache.getFileCache(this.source)?.frontmatter ?? {};
 		return frontmatter;
 	}
 

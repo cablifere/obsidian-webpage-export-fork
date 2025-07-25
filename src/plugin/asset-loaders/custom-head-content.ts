@@ -1,3 +1,4 @@
+import ObsidianApp from "src/shared/app";
 import { AssetLoader } from "./base-asset.js";
 import { AssetType, InlinePolicy, LoadMethod, Mutability } from "./asset-types.js";
 import { Path } from "src/plugin/utils/path";
@@ -30,7 +31,7 @@ export class CustomHeadContent extends AssetLoader {
 			return;
 		}
 
-		this.source = app.vault.getFileByPath(customHeadPath.path);
+		this.source = ObsidianApp.app.vault.getFileByPath(customHeadPath.path);
 		if (!this.source) {
 			const stat = customHeadPath.stat;
 			if (stat) {

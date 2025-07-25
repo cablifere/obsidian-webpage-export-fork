@@ -26,12 +26,13 @@ export const language: i18n = {
 			info_displayTitle: "Titolo descrittivo da mostrare sopra la funzionalità",
 			info_featurePlacement: "Dove posizionare questa funzionalità nella pagina. (Rispetto al selettore)"
 		},
-		document: {
+		documentWidth: {
 			title: "Documento",
-			description: "Controlla le impostazioni del documento",
-			info_allowFoldingLists: "Permettere o meno il piegamento delle liste",
-			info_allowFoldingHeadings: "Permettere o meno il piegamento dei titoli",
-			info_documentWidth: "Larghezza del documento"
+			description: "Larghezza del documento"
+		},
+		customHeadSourcePath: {
+			title: "",
+			description: ""
 		},
 		styleOptionsSection: {
 			title: "Opzioni di Stile",
@@ -40,6 +41,50 @@ export const language: i18n = {
 		makeOfflineCompatible: {
 			title: "Rendi compatibile offline",
 			description: "Scarica risorse, immagini o script online per visualizzare la pagina offline o per non dipendere da una CDN."
+		},
+		addHeadTag: {
+			title: "",
+			description: "",
+		},
+		addBodyClasses: {
+			title: "",
+			description: "",
+		},
+		addMathjaxStyles: {
+			title: "",
+			description: "",
+		},
+		flattenExportPaths: {
+			title: "",
+			description: ""
+		},
+		includeJs: {
+			title: "",
+			description: ""
+		},
+		includeCss: {
+			title: "",
+			description: ""
+		},
+		inlineMedia: {
+			title: "",
+			description: ""
+		},
+		inlineJs: {
+			title: "",
+			description: ""
+		},
+		inlineCss: {
+			title: "",
+			description: ""
+		},
+		inlineFonts: {
+			title: "",
+			description: ""
+		},
+		inlineOther: {
+			title: "",
+			description: ""
 		},
 		includePluginCSS: {
 			title: "Includi CSS dai plugin",
@@ -69,10 +114,6 @@ export const language: i18n = {
 			title: "Tema",
 			description: "Il tema installato da utilizzare per l'esportazione",
 		},
-		exportSettingsSection: {
-			title: "Impostazioni di Esportazione",
-			description: "Controlla impostazioni tecniche più avanzate come la generazione dei link",
-		},
 		relativeHeaderLinks: {
 			title: "Usa Link Relativi per i Titoli",
 			description: "Usa link relativi per i titoli invece di link assoluti",
@@ -85,6 +126,10 @@ export const language: i18n = {
 			title: "Aggiungi Icona Pagina",
 			description: "Aggiungi l'icona del file all'intestazione della pagina",
 		},
+		unifyTitleFormat: {
+			title: "",
+			description: "",
+		},
 		logLevel: {
 			title: "Livello di Log",
 			description: "Imposta il livello di registrazione da visualizzare nella console",
@@ -93,5 +138,13 @@ export const language: i18n = {
 			title: "Proprietà del Titolo",
 			description: "La proprietà da utilizzare come titolo del documento",
 		},
+		exportPath: {
+			title: "",
+			description: "",
+		},
+		exportBlacklist: {
+			title: "",
+			description: "",
+		}
 	}
 };

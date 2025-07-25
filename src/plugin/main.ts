@@ -9,7 +9,7 @@ import { Path } from 'src/plugin/utils/path';
 import { _MarkdownRendererInternal, ExportLog, MarkdownRendererAPI } from 'src/plugin/render-api/render-api';
 import { DataviewRenderer } from './render-api/dataview-renderer';
 import { Website } from './website/website';
-import { i18n } from './translations/language';
+import ObsidianApp from 'src/shared/app';
 
 export default class HTMLExportPlugin extends Plugin {
 	static updateInfo: {
@@ -35,11 +35,12 @@ export default class HTMLExportPlugin extends Plugin {
 	async onload() {
 		console.log("Loading webpage-html-export plugin");
 		HTMLExportPlugin.pluginVersion = this.manifest.version;
+		ObsidianApp.app = this.app;
 
 		// @ts-ignore
 		window.WebpageHTMLExport = this;
 
-		this.addSettingTab(new SettingsPage(this));
+		this.addSettingTab(new SettingsPage(ObsidianApp.app, this));
 		await SettingsPage.loadSettings();
 		await AssetHandler.initialize();
 

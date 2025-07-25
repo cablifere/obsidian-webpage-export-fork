@@ -21,6 +21,7 @@ export class ObsidianWebsite {
 	public isHttp: boolean = window.location.protocol != "file:";
 	public metadata: WebsiteData;
 	public document: ObsidianDocument;
+	public theme: Theme;
 
 	public entryPage: string;
 

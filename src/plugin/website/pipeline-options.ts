@@ -1,5 +1,6 @@
 import { EmojiStyle } from "src/shared/website-data";
 import { MarkdownRendererOptions } from "src/plugin/render-api/api-options";
+import ObsidianApp from "src/shared/app";
 
 export class ExportPipelineOptions extends MarkdownRendererOptions {
 	// Features that can be toggled on or off
@@ -103,7 +104,7 @@ export class ExportPipelineOptions extends MarkdownRendererOptions {
 	/**
 	 * The name of the site.
 	 */
-	siteName: string = app?.vault?.getName() ?? '';
+	siteName: string = ObsidianApp.app?.vault?.getName() ?? '';
 
 	/**
 	 * The style of emoji to use for custom icons.

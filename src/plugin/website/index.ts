@@ -1,7 +1,7 @@
 import { Attachment } from "src/plugin/utils/downloadable";
 import { Website } from "./website";
 import { Webpage } from "./webpage";
-import { Notice, TFile } from "obsidian";
+import { TFile } from "obsidian";
 import { ExportPipelineOptions } from "src/plugin/website/pipeline-options.js";
 import { AssetHandler } from "src/plugin/asset-loaders/asset-handler";
 import { ExportLog } from "src/plugin/render-api/render-api";
@@ -10,10 +10,9 @@ import HTMLExportPlugin from "src/plugin/main";
 import { AssetType } from "src/plugin/asset-loaders/asset-types";
 import { AssetLoader } from "src/plugin/asset-loaders/base-asset";
 import { FileData, WebpageData, WebsiteData } from "src/shared/website-data";
-import { Utils } from "src/plugin/utils/utils";
 import { Shared } from "src/shared/shared";
+import ObsidianApp from "src/shared/app";
 import { WebpageTemplate } from "./webpage-template";
-import md5 from "md5";
 
 export class Index {
 	private website: Website;
@@ -61,7 +60,7 @@ export class Index {
 			// set global values
 			this.websiteData.modifiedTime = Date.now();
 			this.websiteData.siteName = this.website.exportOptions.siteName ?? "";
-			this.websiteData.vaultName = app.vault.getName();
+			this.websiteData.vaultName = ObsidianApp.app.vault.getName();
 			this.websiteData.baseURL = "";
 			this.websiteData.pluginVersion = HTMLExportPlugin.pluginVersion;
 			this.websiteData.themeName = this.website.exportOptions.themeName ?? "Default";
