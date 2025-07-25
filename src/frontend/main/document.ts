@@ -1,15 +1,10 @@
 import { WebpageData, DocumentType } from "src/shared/website-data";
-import { BacklinkList } from "./backlinks";
 import { Callout } from "./callouts";
-import { Canvas } from "./canvas";
 import { Header } from "./headers";
 import { LinkHandler } from "./links";
 import { List } from "./lists";
 import { Bounds } from "./utils";
 import { Notice } from "./notifications";
-import { Tags } from "./tags";
-import { Tree } from "./trees";
-import { Aliases } from "./aliases";
 
 export class WebpageDocument {
 	public title: string = "";
@@ -19,7 +14,6 @@ export class WebpageDocument {
 	public children: WebpageDocument[] = [];
 	public parent: WebpageDocument | null;
 	public isPreview: boolean = false;
-	public canvas: Canvas;
 
 	public documentType: DocumentType;
 	public containerEl: HTMLElement;
@@ -63,7 +57,7 @@ export class WebpageDocument {
 			url.startsWith("\\")
 		) {
 			console.error(
-				"Please use a relative path from the root of the wesite to load a webpage"
+				"Please use a relative path from the root of the website to load a webpage"
 			);
 			return;
 		}
@@ -201,10 +195,6 @@ export class WebpageDocument {
 			this.processHeaders();
 			this.processCallouts();
 			this.processLists();
-		}
-
-		if (this.documentType == DocumentType.Canvas) {
-			this.canvas = new Canvas(this);
 		}
 
 		if (this.isMainDocument || this.isPreview)

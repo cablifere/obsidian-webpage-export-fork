@@ -1,31 +1,14 @@
-import { Search } from "./search";
-import { Sidebar } from "./sidebars";
-import { Tree } from "./trees";
 import { Bounds, delay, getLengthInPixels, waitUntil } from "./utils";
 import { WebpageDocument as ObsidianDocument } from "./document";
 import {
-	DocumentType,
 	FileData,
 	WebpageData,
 	WebsiteData,
-	WebsiteOptions,
 } from "src/shared/website-data";
-import { GraphView } from "./graph-view";
 import { Notice } from "./notifications";
 import { Theme } from "./theme";
 import { LinkHandler } from "./links";
 import { Shared } from "src/shared/shared";
-import { FilePreviewPopover } from "./link-preview";
-import { DynamicInsertedFeature } from "src/shared/dynamic-inserted-feature";
-import { CounterFeature } from "./counter-feature";
-import {
-	FeatureRelation,
-	InsertedFeatureOptions,
-	RelationType,
-} from "src/shared/features/feature-options-base";
-import { BacklinkList } from "./backlinks";
-import { Tags } from "./tags";
-import { Aliases } from "./aliases";
 
 type Constructor<T> = new () => T;
 
@@ -40,27 +23,15 @@ function isConstructor(value: any): value is Constructor<any> {
 
 export class ObsidianWebsite {
 	public LinkHandler: LinkHandler = LinkHandler;
-	public LinkPreview: unknown = FilePreviewPopover;
 
 	public bodyEl: HTMLElement;
-	public horizontalLayout: HTMLElement;
 	public centerContentEl: HTMLElement;
 	public loadingEl: HTMLElement;
 
 	public isLoaded: boolean = false;
 	public isHttp: boolean = window.location.protocol != "file:";
 	public metadata: WebsiteData;
-	public theme: Theme;
-	public fileTree: Tree | undefined = undefined;
-	public outlineTree: Tree | undefined = undefined;
-	public search: Search | undefined = undefined;
-	public leftSidebar: Sidebar | undefined = undefined;
-	public rightSidebar: Sidebar | undefined = undefined;
 	public document: ObsidianDocument;
-	public graphView: GraphView | undefined = undefined;
-	public backlinkList: BacklinkList | undefined = undefined;
-	public tags: Tags | undefined = undefined;
-	public aliases: Aliases | undefined = undefined;
 
 	public entryPage: string;
 
@@ -102,31 +73,13 @@ export class ObsidianWebsite {
 		this.theme = new Theme();
 
 		this.bodyEl = document.body;
-		this.horizontalLayout = document.querySelector("#main-horizontal") as HTMLElement;
 		this.centerContentEl = document.querySelector(
 			"#center-content"
-		) as HTMLElement;
-
-		const fileTreeEl = document.querySelector(
-			"#file-explorer"
-		) as HTMLElement;
-		const outlineTreeEl = document.querySelector("#outline") as HTMLElement;
-		const leftSidebarEl = document.querySelector(
-			".sidebar#left-sidebar"
-		) as HTMLElement;
-		const rightSidebarEl = document.querySelector(
-			".sidebar#right-sidebar"
 		) as HTMLElement;
 
 		this.bodyEl.className += " " + this.metadata.bodyClasses;
 
 		this.createLoadingEl();
-
-		if (fileTreeEl) this.fileTree = new Tree(fileTreeEl);
-		if (outlineTreeEl) this.outlineTree = new Tree(outlineTreeEl, this.metadata.featureOptions.outline.minCollapseDepth);
-		if (leftSidebarEl) this.leftSidebar = new Sidebar(leftSidebarEl);
-		if (rightSidebarEl) this.rightSidebar = new Sidebar(rightSidebarEl);
-		this.search = await new Search().init();
 
 		const pathname =
 			document
@@ -138,118 +91,7 @@ export class ObsidianWebsite {
 		await this.document.loadChildDocuments();
 		await this.document.postLoadInit();
 
-		if (
-			!ObsidianSite.metadata.ignoreMetadata &&
-			ObsidianSite.metadata.featureOptions.graphView.enabled
-		) {
-			this.loadGraphView().then(() =>
-				this.graphView?.showGraph([pathname])
-			);
-		}
-
 		this.initEvents();
-
-		FilePreviewPopover.loadPinnedPreviews();
-
-		this.onDocumentLoad((doc) => {
-
-			if (!ObsidianSite.metadata.ignoreMetadata) {
-				const insertBacklinks =
-					doc.isMainDocument &&
-					!ObsidianSite.metadata.ignoreMetadata &&
-					ObsidianSite.metadata.featureOptions.backlinks.enabled &&
-					doc.documentType == DocumentType.Markdown;
-				const insertTags =
-					doc.isMainDocument &&
-					!ObsidianSite.metadata.ignoreMetadata &&
-					ObsidianSite.metadata.featureOptions.tags.enabled &&
-					doc.documentType == DocumentType.Markdown;
-				const insertAliases =
-					doc.isMainDocument &&
-					!ObsidianSite.metadata.ignoreMetadata &&
-					ObsidianSite.metadata.featureOptions.alias.enabled &&
-					doc.documentType == DocumentType.Markdown;
-
-				// ------------------ BACKLINKS -----------------
-				if (insertBacklinks) {
-					const backlinks = doc.info.backlinks?.filter(
-						(b) => b != doc.pathname
-					);
-
-					if (!this.backlinkList) {
-						this.backlinkList = new BacklinkList(
-							doc.info.backlinks ?? []
-						);
-					} else {
-						this.backlinkList?.modifyDependencies((d) => {
-							d.backlinkPaths = doc.info.backlinks ?? [];
-						});
-					}
-
-					if (!backlinks || backlinks.length == 0) {
-						this.backlinkList?.hide();
-					} else {
-						this.backlinkList?.show();
-					}
-				} else {
-					this.backlinkList?.hide();
-				}
-
-				// ------------------ TAGS -----------------
-				if (insertTags) {
-					const tags: string[] = [];
-
-					if (ObsidianSite.metadata.featureOptions.tags.showInlineTags &&
-						doc.info.inlineTags
-					) {
-						tags.push(...doc.info.inlineTags);
-					}
-					if (ObsidianSite.metadata.featureOptions.tags
-						.showFrontmatterTags &&
-						doc.info.frontmatterTags
-					) {
-						tags.push(...doc.info.frontmatterTags);
-					}
-
-					if (!this.tags) {
-						this.tags = new Tags(tags);
-					} else {
-						this.tags?.modifyDependencies((d) => {
-							d.tags = tags;
-						});
-					}
-
-					if (tags.length == 0) {
-						this.tags?.hide();
-					} else {
-						this.tags?.show();
-					}
-				} else {
-					this.tags?.hide();
-				}
-
-				// ------------------ ALIASES -----------------
-				if (insertAliases) {
-					const aliases = doc.info.aliases;
-
-					if (!this.aliases) {
-						this.aliases = new Aliases(aliases ?? []);
-					} else {
-						this.aliases?.modifyDependencies((d) => {
-							d.aliases = aliases ?? [];
-						});
-					}
-
-					if (!aliases || aliases.length == 0) {
-						this.aliases?.hide();
-					} else {
-						this.aliases?.show();
-					}
-				} else {
-					this.aliases?.hide();
-				}
-			}
-		});
 
 		// Set initial history state
 		if (this.isHttp) {
@@ -301,11 +143,6 @@ export class ObsidianWebsite {
 		url = LinkHandler.getPathnameFromURL(url);
 		console.log("Loading URL", url, header, query);
 
-		if (query && query.startsWith("query=")) {
-			this.search?.searchParseFilters(query.substring(6));
-			return;
-		}
-
 		// if this document is already loaded
 		if (this.document.pathname == url) {
 			if (header) this.document.scrollToHeader(header);
@@ -328,7 +165,7 @@ export class ObsidianWebsite {
 		if (!page)
 		{
 			new Notice("Failed to load page. Unknown error.");
-			return;	
+			return;
 		}
 
 		// Update meta tags
@@ -341,11 +178,6 @@ export class ObsidianWebsite {
 		this.updateMetaTag("og:url", window.location.href);
 		this.updateMetaTag("og:image", page.info?.coverImageURL || "");
 
-		// Update graph view and file tree
-		await this.graphView?.showGraph([page.pathname]);
-		this.fileTree?.findByPath(page.pathname)?.setActive();
-		this.fileTree?.revealPath(page.pathname);
-		this.graphView?.setActiveNodeByPath(page.pathname);
 		this.document = page;
 
 		if (this.document && this.isHttp && pushState) {
@@ -356,14 +188,6 @@ export class ObsidianWebsite {
 				this.document.title,
 				currentPath
 			);
-		}
-
-		// update outline - TODO: make this a dynamic inserted feature
-		let newOutlineEl = page.sourceHtml.querySelector("#outline") as HTMLElement;
-		if (newOutlineEl) {
-			newOutlineEl = document.adoptNode(newOutlineEl);
-			document.querySelector("#outline")?.replaceWith(newOutlineEl);
-			ObsidianSite.outlineTree = new Tree(newOutlineEl, this.metadata.featureOptions.outline.minCollapseDepth);
 		}
 
 		setTimeout(async () => {
@@ -435,42 +259,6 @@ export class ObsidianWebsite {
 		return undefined;
 	}
 
-	private async loadGraphView() {
-		const graphViewFeature = document.querySelector(
-			".graph-view-wrapper"
-		) as HTMLElement;
-		if (!graphViewFeature) return;
-
-		const localThis = this;
-		//@ts-ignore
-		waitLoadScripts(["graph-render-worker", "graph-wasm"], () => {
-			console.log("scripts loaded");
-			async function initGraphView() {
-				console.log("Initializing graph view");
-				const graphView = new GraphView(graphViewFeature);
-				localThis.graphView = graphView;
-				console.log("Graph view initialized");
-			}
-
-			//@ts-ignore
-			Module["onRuntimeInitialized"] = () => {
-				console.log("Wasm loaded");
-				initGraphView();
-			};
-
-			//@ts-ignore
-			run();
-
-			setTimeout(() => {
-				if (localThis.graphView == undefined) {
-					initGraphView();
-				}
-			}, 100);
-		});
-
-		await waitUntil(() => this.graphView != undefined);
-	}
-
 	public getLocalDataFromId(id: string): any | undefined {
 		const el = document.getElementById(id);
 		if (!el) return;
@@ -536,7 +324,6 @@ export class ObsidianWebsite {
 		inside.style.transitionDuration = "";
 		inside.classList.toggle("hide", loading);
 		this.loadingEl.classList.toggle("show", loading);
-		// this.graphView?.graphRenderer?.canvas.classList.toggle("hide", loading);
 
 		if (loading) {
 			// position loading icon in the center of the screen
@@ -562,7 +349,6 @@ export class ObsidianWebsite {
 	}
 
 	private onEndResize() {
-		this.graphView?.graphRenderer?.autoResizeCanvas();
 		document.body.classList.toggle("resizing", false);
 	}
 
@@ -580,7 +366,7 @@ export class ObsidianWebsite {
 	private set deviceSize(size: string) {
 		this._deviceSize = size;
 	}
-	
+
 	private onResize() {
 		if (!this.isResizing) {
 			this.onStartResize();
@@ -619,34 +405,20 @@ export class ObsidianWebsite {
 		}
 
 		const docWidthCSS =
-			this.metadata.featureOptions.document?.documentWidth ?? "45em";
-		const leftWdithCSS =
-			this.metadata.featureOptions.sidebar?.leftDefaultWidth ?? "20em";
-		const rightWidthCSS =
-			this.metadata.featureOptions.sidebar?.rightDefaultWidth ?? "20em";
+			this.metadata.featureOptions.documentWidth ?? "45em";
 
 		// calculate the css widths
 		const docWidth = getLengthInPixels(docWidthCSS, this.centerContentEl);
-		const leftWidth = this.leftSidebar
-			? getLengthInPixels(leftWdithCSS, this.leftSidebar?.containerEl)
-			: 0;
-		const rightWidth = this.rightSidebar
-			? getLengthInPixels(rightWidthCSS, this.rightSidebar?.containerEl)
-			: 0;
 
 		if (
-			widthNowGreaterThan(docWidth + leftWidth + rightWidth) ||
+			widthNowGreaterThan(docWidth) ||
 			widthNowGreaterThan(1025)
 		) {
 			this.deviceSize = "large-screen";
-			document.body.classList.toggle("floating-sidebars", false);
 			document.body.classList.toggle("is-large-screen", true);
 			document.body.classList.toggle("is-small-screen", false);
 			document.body.classList.toggle("is-tablet", false);
 			document.body.classList.toggle("is-phone", false);
-
-			if (this.leftSidebar) this.leftSidebar.collapsed = false;
-			if (this.rightSidebar) this.rightSidebar.collapsed = false;
 		} else if (
 			widthNowInRange(
 				docWidth + leftWidth,
@@ -655,49 +427,28 @@ export class ObsidianWebsite {
 			widthNowInRange(769, 1024)
 		) {
 			this.deviceSize = "small screen";
-			document.body.classList.toggle("floating-sidebars", false);
 			document.body.classList.toggle("is-large-screen", false);
 			document.body.classList.toggle("is-small-screen", true);
 			document.body.classList.toggle("is-tablet", false);
 			document.body.classList.toggle("is-phone", false);
-
-			if (
-				this.leftSidebar &&
-				this.rightSidebar &&
-				!this.leftSidebar.collapsed
-			) {
-				this.rightSidebar.collapsed = true;
-			}
 		} else if (
 			widthNowInRange(leftWidth + rightWidth, docWidth + leftWidth) ||
 			widthNowInRange(481, 768)
 		) {
 			this.deviceSize = "tablet";
-			document.body.classList.toggle("floating-sidebars", true);
 			document.body.classList.toggle("is-large-screen", false);
 			document.body.classList.toggle("is-small-screen", false);
 			document.body.classList.toggle("is-tablet", true);
 			document.body.classList.toggle("is-phone", false);
-
-			if (
-				this.leftSidebar &&
-				this.rightSidebar &&
-				!this.leftSidebar.collapsed
-			) {
-				this.rightSidebar.collapsed = true;
-			}
 		} else if (
 			widthNowLessThan(leftWidth + rightWidth) ||
 			widthNowLessThan(480)
 		) {
 			this.deviceSize = "phone";
-			document.body.classList.toggle("floating-sidebars", true);
 			document.body.classList.toggle("is-large-screen", false);
 			document.body.classList.toggle("is-small-screen", false);
 			document.body.classList.toggle("is-tablet", false);
 			document.body.classList.toggle("is-phone", true);
-			if (this.leftSidebar) this.leftSidebar.collapsed = true;
-			if (this.rightSidebar) this.rightSidebar.collapsed = true;
 		}
 
 		this.lastScreenWidth = window.innerWidth;

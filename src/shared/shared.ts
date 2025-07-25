@@ -1,6 +1,4 @@
-
-export class Shared 
-{
+export class Shared {
 	public static libFolderName: string = "site-lib";
 	public static mediaFolderName: string = "media";
 	public static scriptsFolderName: string = "scripts";
@@ -8,5 +6,4 @@ export class Shared
 	public static fontFolderName: string = "fonts";
 	public static htmlFolderName: string = "html";
 	public static metadataFileName: string = "metadata.json";
-	public static searchIndexFileName: string = "search-index.json";
 }

@@ -23,20 +23,20 @@ export interface i18n
 	},
 	updateAvailable: string;
 	exportAsHTML: string;
-	exportModal: 
+	exportModal:
 	{
 		title: string;
 		exportAsTitle: string;
 		moreOptions: string;
 		openAfterExport: string;
 		exportButton: string;
-		filePicker: 
+		filePicker:
 		{
 			title: string;
 			selectAll: string;
 			save: string;
 		}
-		currentSite: 
+		currentSite:
 		{
 			noSite: string;
 			oldSite: string;
@@ -120,7 +120,7 @@ export interface i18n
 			info_edgePruning: string;
 			info_minNodeRadius: string;
 			info_maxNodeRadius: string;
-		},		
+		},
 		search: {
 			title: string;
 			description: string;
@@ -230,16 +230,19 @@ export interface i18n
 			title: string;
 			description: string;
 		},
-
+		exportRoot: {
+			title: string;
+			description: string;
+		},
 	}
 }
 
 function getUserLanguage(): string {
 	let locale = window.moment.locale();
-	
+
 	if (!locale)
 	{
-		locale = "en";	
+		locale = "en";
 	}
 
 	return locale;
@@ -257,7 +260,7 @@ function getLanguage()
 	return language;
 }
 
-export let translations: { [key: string]: i18n } = 
+export let translations: { [key: string]: i18n } =
 {
 	"en": en, // English
 	"zh-cn": cn, // Chinese

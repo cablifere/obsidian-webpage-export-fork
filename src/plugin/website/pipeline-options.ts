@@ -1,22 +1,8 @@
-import { BacklinksOptions } from "src/shared/features/backlinks";
-import { TagsOptions } from "src/shared/features/tags";
-import { AliasesOptions } from "src/shared/features/aliases";
-import { PropertiesOptions } from "src/shared/features/properties";
-import { FileNavigationOptions } from "src/shared/features/file-navigation";
-import { OutlineOptions } from "src/shared/features/outline";
-import { ThemeToggleOptions } from "src/shared/features/theme-toggle";
-import { GraphViewOptions } from "src/shared/features/graph-view";
-import { SidebarOptions } from "src/shared/features/sidebar";
-import { DocumentOptions } from "src/shared/features/document";
 import { EmojiStyle } from "src/shared/website-data";
-import { SearchOptions } from "src/shared/features/search";
 import { CustomHeadOptions } from "src/shared/features/custom-head";
 import { MarkdownRendererOptions } from "src/plugin/render-api/api-options";
-import { RssOptions } from "src/shared/features/rss";
-import { LinkPreviewOptions } from "src/shared/features/link-preview";
 
-export class ExportPipelineOptions extends MarkdownRendererOptions
-{
+export class ExportPipelineOptions extends MarkdownRendererOptions {
 	// Features that can be toggled on or off
 
 	/**
@@ -35,55 +21,6 @@ export class ExportPipelineOptions extends MarkdownRendererOptions
 	addHeadTag: boolean = true;
 
 	// Options for the features
-	/**
-	 * The options for the backlinks feature.
-	 */
-	backlinkOptions: BacklinksOptions = new BacklinksOptions();
-
-	/**
-	 * The options for the tags feature.
-	 */
-	tagOptions: TagsOptions = new TagsOptions();
-
-	/**
-	 * The options for the aliases feature.
-	 */
-	aliasOptions: AliasesOptions = new AliasesOptions();
-
-	/**
-	 * The options for the properties feature.
-	 */
-	propertiesOptions: PropertiesOptions = new PropertiesOptions();
-
-	/**
-	 * The options for the file navigation feature.
-	 */
-	fileNavigationOptions: FileNavigationOptions = new FileNavigationOptions();
-
-	/**
-	 * The options for the search feature.
-	 */
-	searchOptions: SearchOptions = new SearchOptions();
-
-	/**
-	 * The options for the outline feature.
-	 */
-	outlineOptions: OutlineOptions = new OutlineOptions();
-
-	/**
-	 * The options for the theme toggle feature.
-	 */
-	themeToggleOptions: ThemeToggleOptions = new ThemeToggleOptions();
-
-	/**
-	 * The options for the graph view feature.
-	 */
-	graphViewOptions: GraphViewOptions = new GraphViewOptions();
-
-	/**
-	 * The options for the sidebar feature.
-	 */
-	sidebarOptions: SidebarOptions = new SidebarOptions();
 
 	/**
 	 * Custom head content options
@@ -93,17 +30,7 @@ export class ExportPipelineOptions extends MarkdownRendererOptions
 	/**
 	 * Document section options
 	 */
-	documentOptions: DocumentOptions = new DocumentOptions();
-
-	/**
-	 * Document section options
-	 */
-	rssOptions: RssOptions = new RssOptions();
-
-	/**
-	 * The options for the link preview feature.
-	 */
-	linkPreviewOptions: LinkPreviewOptions = new LinkPreviewOptions();
+	documentWidth: string = "40em";
 
 	/**
 	 * Make outline links relative instead of absolute.
@@ -148,14 +75,9 @@ export class ExportPipelineOptions extends MarkdownRendererOptions
 	inlineOther: boolean = false;
 
 	/**
-	 * Combine the whole export into a single .html file.
-	 */
-	combineAsSingleFile: boolean = false;
-
-	/**
 	 * Do not leave any online urls, download them and embed them into the HTML.
 	 */
-	offlineResources: boolean = false;
+	offlineResources: boolean = true;
 
 	/**
 	 * The name of the theme to use for the export.
@@ -174,11 +96,6 @@ export class ExportPipelineOptions extends MarkdownRendererOptions
 	 */
 	flattenExportPaths: boolean = false;
 
-	/**
-	 * Fix all links to be relative and direct to other files or media included in the export.
-	 */
-	fixLinks: boolean = true;
-	
 	/**
 	 * The local path to the favicon for the site.
 	 */
@@ -222,17 +139,17 @@ export class ExportPipelineOptions extends MarkdownRendererOptions
 		// Iterate through all properties of this instance
 		for (const [propertyName, propertyValue] of Object.entries(this)) {
 			// Check if this property is a feature options instance (has featureId)
-			if (propertyValue && 
-				typeof propertyValue === 'object' && 
+			if (propertyValue &&
+				typeof propertyValue === 'object' &&
 				'featureId' in propertyValue &&
 				propertyValue.constructor !== Object) {
-				
+
 				// Get the original constructor function
 				const ConstructorClass = propertyValue.constructor as new() => any;
-				
+
 				// Create a fresh instance with constructor-set defaults
 				const freshInstance = new ConstructorClass();
-				
+
 				// Apply the loaded JSON data on top of the constructor defaults
 				(this as any)[propertyName] = Object.assign(freshInstance, propertyValue);
 			}

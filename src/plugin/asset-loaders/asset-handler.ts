@@ -1,12 +1,6 @@
-import graphWASMJS from "src/frontend/graph-view/graph-wasm.txt.js";
-import renderWorkerJS from "src/frontend/graph-view/graph-render-worker.txt.js";
-import graphWASM from "src/frontend/graph-view/graph-wasm.wasm";
 import webpageStyles from "src/assets/plugin-styles.txt.css";
-import deferredJS from "src/assets/deferred.txt.js";
 import deferredCSS from "src/assets/deferred.txt.css";
 import themeLoadJS from "src/assets/theme-load.txt.js";
-
-import minisearchJS from "src/assets/minisearch.txt.js";
 
 import { Path } from "src/plugin/utils/path.js";
 import { AssetLoader } from "./base-asset.js";
@@ -25,7 +19,6 @@ import { ExportLog } from "src/plugin/render-api/render-api.js";
 import { fileTypeFromBuffer } from "file-type";
 import { ExportPipelineOptions } from "src/plugin/website/pipeline-options.js";
 import { Shared } from "src/shared/shared.js";
-import { WebsiteJS } from "./website-js.js";
 import postcss from 'postcss';
 import safeParser from 'postcss-safe-parser';
 const mime = require('mime');
@@ -99,12 +92,8 @@ export class AssetHandler
 
 	// scripts
 	public static websiteJS: WebsiteJS;
-	public static graphWASMJS: AssetLoader;
-	public static graphWASM: AssetLoader;
-	public static renderWorkerJS: AssetLoader;
-	public static deferredJS: AssetLoader;
 	public static themeLoadJS: AssetLoader;
-	 
+
 	// other
 	public static favicon: Favicon;
 	public static customHeadContent: CustomHeadContent;
@@ -115,7 +104,7 @@ export class AssetHandler
 	{
 		this.libraryFolder = new Path(Shared.libFolderName);
 		this.mediaFolder = this.libraryFolder.joinString(Shared.mediaFolderName);
-		this.jsFolder = this.libraryFolder.joinString(Shared.scriptsFolderName); 
+		this.jsFolder = this.libraryFolder.joinString(Shared.scriptsFolderName);
 		this.cssFolder = this.libraryFolder.joinString(Shared.cssFolderName);
 		this.fontFolder = this.libraryFolder.joinString(Shared.fontFolderName);
 		this.htmlFolder = this.libraryFolder.joinString(Shared.htmlFolderName);
@@ -134,14 +123,9 @@ export class AssetHandler
 		this.websiteJS = new WebsiteJS();
 		this.websiteStyles = new AssetLoader("main-styles.css", webpageStyles, null, AssetType.Style, InlinePolicy.AutoHead, true, Mutability.Static, LoadMethod.Async, 4);
 		this.deferredCSS = new AssetLoader("deferred.css", deferredCSS, null, AssetType.Style, InlinePolicy.InlineHead, true, Mutability.Static, LoadMethod.Defer, -1000);
-		this.graphWASMJS = new AssetLoader("graph-wasm.js", graphWASMJS, null, AssetType.Script, InlinePolicy.AutoHead, true, Mutability.Static);
-		this.graphWASM = new AssetLoader("graph-wasm.wasm", Buffer.from(graphWASM), null, AssetType.Script, InlinePolicy.Download, false, Mutability.Static);
-		this.renderWorkerJS = new AssetLoader("graph-render-worker.js", renderWorkerJS, null, AssetType.Script, InlinePolicy.AutoHead, true, Mutability.Static);
-		this.deferredJS = new AssetLoader("deferred.js", deferredJS, null, AssetType.Script, InlinePolicy.InlineHead, true, Mutability.Static, LoadMethod.Defer, -1000);
 		this.themeLoadJS = new AssetLoader("theme-load.js", themeLoadJS, null, AssetType.Script, InlinePolicy.Inline, true, Mutability.Static, LoadMethod.Defer);
 		this.favicon = new Favicon();
 		this.customHeadContent = new CustomHeadContent();
-
 
 		this.initPaths();
 		// by default all static assets have a modified time the same as main.js
@@ -150,7 +134,7 @@ export class AssetHandler
 		this.staticAssets.forEach(asset => asset.sourceStat.mtime = this.mainJsModTime);
 
 		this.allAssets.sort((a, b) => a.loadPriority - b.loadPriority);
-		
+
 		const loadPromises = []
 		for (const asset of this.allAssets)
 		{
@@ -200,17 +184,12 @@ export class AssetHandler
 
 	private static filterDownloads(downloads: AssetLoader[], options: ExportPipelineOptions): AssetLoader[]
 	{
-		if (!options.graphViewOptions.enabled)
-		{
-			downloads = downloads.filter(asset => ![this.graphWASMJS, this.graphWASM, this.renderWorkerJS].includes(asset));
-		}
-
-		if (!options.includeCSS) 
+		if (!options.includeCSS)
 		{
 			downloads = downloads.filter(asset => asset.type != AssetType.Style);
 		}
 
-		if (!options.includeJS) 
+		if (!options.includeJS)
 		{
 			downloads = downloads.filter(asset => asset.type != AssetType.Script);
 		}
@@ -322,7 +301,7 @@ export class AssetHandler
 						h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
 						h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
 						h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-						
+
 						return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 					}
 
@@ -332,11 +311,11 @@ export class AssetHandler
 					const buffer = Buffer.from(data, "base64");
 					const dataHash = hash(data);
 					let filename = `${dataHash}.${extension}`;
-					if (extension == '') 
+					if (extension == '')
 					{
 						const type = await fileTypeFromBuffer(buffer);
 						if (type) extension = type.ext;
-						filename = `${dataHash}.${extension}`;						
+						filename = `${dataHash}.${extension}`;
 					}
 					const type = AssetLoader.extentionToType(extension);
 
@@ -356,12 +335,12 @@ export class AssetHandler
 					});
 				}
 				continue;
-			} 
+			}
 
 			const path = new Path(url);
 			if (path.isDirectory || path.isEmpty)
 			{
-				continue;	
+				continue;
 			}
 			const type = AssetLoader.extentionToType(path.extension);
 			const childAsset = new FetchBuffer(path.fullName, url, type, InlinePolicy.Download, false, Mutability.Child);
@@ -369,7 +348,7 @@ export class AssetHandler
 
 			const loadPromise = childAsset.load();
 			promises.push(loadPromise);
-			loadPromise.then(() => 
+			loadPromise.then(() =>
 			{
 				if (childAsset.data == undefined || childAsset.data == null || childAsset.data.length == 0)
 				{
@@ -412,15 +391,15 @@ export class AssetHandler
                 root.walkRules((rule: postcss.Rule) => {
                     const filteredSelectors = rule.selectors.filter((selector: string) => {
                         const selectorParts = selector.split(/[\s.#:>+~]+/).filter(Boolean);
-                        
+
                         if (selectorParts.some(part => alwaysDiscard.some(d => part.includes(d)))) {
                             return false;
                         }
-                        
+
                         if (selectorParts.some(part => keep.some(k => part.includes(k)))) {
                             return true;
                         }
-                        
+
                         return !selectorParts.some(part => discard.some(d => part.includes(d)));
                     });
 
@@ -431,7 +410,7 @@ export class AssetHandler
                     }
                 });
             }
-        ]).process(cssContent, { 
+        ]).process(cssContent, {
             from: undefined,
             parser: safeParser
         });

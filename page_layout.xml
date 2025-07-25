@@ -6,17 +6,9 @@
     <body>
         <vertical>
             <webpage>
-                <left-sidebar>
-                    <theme-toggle />
-                    <file-viewer />
-                </left-sidebar>
                 <vertical>
                     <document />
                 </vertical>
-                <right-sidebar>
-                    <graph-view />
-                    <outline />
-                </right-sidebar>
             </webpage>
         </vertical>
     </body>

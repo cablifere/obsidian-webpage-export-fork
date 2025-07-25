@@ -14,7 +14,7 @@ import { AssetHandler } from "../asset-loaders/asset-handler";
 
 export namespace MarkdownRendererAPI {
 	export const viewableMediaExtensions = ["png", "jpg", "jpeg", "svg", "gif", "bmp", "ico", "mp4", "mov", "avi", "webm", "mpeg", "mp3", "wav", "ogg", "aac", "pdf", "html", "htm", "json", "txt", "yaml"];
-	export const convertableExtensions = ["md", "canvas", "base", "drawing", "excalidraw", ...viewableMediaExtensions]; // drawing is an alias for excalidraw
+	export const convertableExtensions = ["md", "base", ...viewableMediaExtensions]; // drawing is an alias for excalidraw
 
 	export function extentionToTag(extention: string) {
 		if (["png", "jpg", "jpeg", "svg", "gif", "bmp", "ico"].includes(extention)) return "img";
@@ -28,7 +28,7 @@ export namespace MarkdownRendererAPI {
 		options = Object.assign(new MarkdownRendererOptions(), options);
 		const html = await _MarkdownRendererInternal.renderMarkdown(markdown, options);
 		if (!html) return;
-		if (options.postProcess) await _MarkdownRendererInternal.postProcessHTML(html, options);
+		await _MarkdownRendererInternal.postProcessHTML(html, options);
 		const text = html.innerHTML;
 		if (!options.container) html.remove();
 		return text;
@@ -193,15 +193,6 @@ export namespace _MarkdownRendererInternal {
 				const preview = view.previewMode;
 				html = await renderMarkdownView(preview, options);
 				break;
-			case "kanban":
-				html = await renderGeneric(view, options);
-				break;
-			case "excalidraw":
-				html = await renderExcalidraw(view, options);
-				break;
-			case "canvas":
-				html = await renderCanvas(view, options);
-				break;
 			default:
 				html = await renderGeneric(view, options);
 				break;
@@ -344,7 +335,7 @@ export namespace _MarkdownRendererInternal {
 			for (const canvas of canvases) {
 				const data = canvas.toDataURL();
 				if (data.length < 100) {
-					ExportLog.log(canvas.outerHTML, "Failed to render canvas based plugin element in file " + preview.file.name + ":");
+					ExportLog.log(canvas.outerHTML, 'Failed to render canvas based plugin element in file ' + preview.file.name + ":");
 					canvas.remove();
 					continue;
 				}
@@ -374,11 +365,6 @@ export namespace _MarkdownRendererInternal {
 
 		newSizerEl.empty();
 
-		// create the markdown-preview-pusher element
-		if (options.createPusherElement) {
-			newSizerEl.createDiv({ attr: { class: "markdown-pusher", style: "width: 1px; height: 0.1px; margin-bottom: 0px;" } });
-		}
-
 		// move all of them back in since rendering can cause some sections to move themselves out of their container
 		for (const section of sections) {
 			newSizerEl.appendChild(section.el.cloneNode(true));
@@ -388,11 +374,6 @@ export namespace _MarkdownRendererInternal {
 		const banner = preview.containerEl.querySelector(".obsidian-banner-wrapper");
 		if (banner) {
 			newSizerEl.before(banner);
-		}
-
-		// if we aren't keeping the view element then only keep the content of the sizer element
-		if (options.createDocumentContainer === false) {
-			newMarkdownEl.outerHTML = newSizerEl.innerHTML;
 		}
 
 		options.container?.appendChild(newMarkdownEl);
@@ -653,16 +634,6 @@ export namespace _MarkdownRendererInternal {
 
 		newSizerEl.empty();
 
-		// create the markdown-preview-pusher element
-		if (options.createPusherElement) {
-			newSizerEl.createDiv({
-				attr: {
-					class: "markdown-pusher",
-					style: "width: 1px; height: 0.1px; margin-bottom: 0px;",
-				},
-			});
-		}
-
 		newSizerEl.innerHTML = sizerEl.innerHTML;
 
 		// get banner plugin banner and insert it before the sizer element
@@ -671,10 +642,6 @@ export namespace _MarkdownRendererInternal {
 		);
 		if (banner) {
 			newSizerEl.before(banner);
-		}
-		// if we aren't keeping the view element then only keep the content of the sizer element
-		if (options.createDocumentContainer === false) {
-			newMarkdownEl.outerHTML = newSizerEl.innerHTML;
 		}
 
 		options.container?.appendChild(newMarkdownEl);
@@ -753,38 +720,6 @@ export namespace _MarkdownRendererInternal {
 		return contentEl;
 	}
 
-	async function renderExcalidraw(view: any, options: MarkdownRendererOptions): Promise<HTMLElement | undefined> {
-		await delay(500);
-
-		// @ts-ignore
-		const scene = view.excalidrawData.scene;
-
-		// @ts-ignore
-		const svg = await view.svg(scene, "", false);
-
-		// remove rect fill
-		const isLight = !svg.getAttribute("filter");
-		if (!isLight) svg.removeAttribute("filter");
-		svg.classList.add(isLight ? "light" : "dark");
-
-		let contentEl = batchDocument.body.createDiv();
-		contentEl.classList.add("obsidian-document");
-		const sizerEl = contentEl.createDiv();
-		sizerEl.classList.add("excalidraw-plugin");
-
-		sizerEl.appendChild(svg);
-
-		if (checkCancelled()) return undefined;
-
-		if (options.createDocumentContainer === false) {
-			contentEl = svg;
-		}
-
-		options.container?.appendChild(contentEl);
-
-		return contentEl;
-	}
-
 	export async function getIconForFile(file: TAbstractFile): Promise<{ icon: string; isDefault: boolean }> {
 		if (!file) return { icon: "", isDefault: true };
 
@@ -797,11 +732,6 @@ export namespace _MarkdownRendererInternal {
 			// look for icon property on a file inside the folder with the same name as the folder
 			let childFile = app.vault.getFileByPath(file.path + "/" + file.name + ".md");
 			if (childFile) useFile = childFile;
-
-			if (!childFile && Settings.exportOptions.fileNavigationOptions.showDefaultFolderIcons) {
-				iconProperty = Settings.exportOptions.fileNavigationOptions.defaultFolderIcon;
-				useDefaultIcon = true;
-			}
 		}
 
 		if (useFile instanceof TFile)
@@ -809,12 +739,6 @@ export namespace _MarkdownRendererInternal {
 			const fileCache = app.metadataCache.getFileCache(useFile);
 			const frontmatter = fileCache?.frontmatter;
 			iconProperty = frontmatter?.icon ?? frontmatter?.sticker ?? frontmatter?.banner_icon; // banner plugin support
-			if (!iconProperty && Settings.exportOptions.fileNavigationOptions.showDefaultFileIcons) {
-				useDefaultIcon = true;
-				const isMedia = AssetLoader.extentionToType(useFile.extension) == AssetType.Media;
-				iconProperty = isMedia ? Settings.exportOptions.fileNavigationOptions.defaultMediaIcon : Settings.exportOptions.fileNavigationOptions.defaultFileIcon;
-				if (useFile.extension == "canvas") iconProperty = "lucide//layout-dashboard";
-			}
 		}
 
 		iconOutput = await IconHandler.getIcon(iconProperty ?? "");
@@ -942,125 +866,6 @@ export namespace _MarkdownRendererInternal {
 		(header ?? sizerElement)?.prepend(titleEl);
 	}
 
-	export async function renderCanvas(view: any, options: MarkdownRendererOptions): Promise<HTMLElement | undefined> {
-		if (checkCancelled()) return undefined;
-
-		// this is to decide whether to inline the HTML of certain node or not
-		let allExportedPaths = Settings.getAllFilesFromPaths(options.filesToExport);
-
-		const canvas = view.canvas;
-
-		const nodes = canvas.nodes;
-		const edges = canvas.edges;
-
-		canvas.zoomToFit();
-		await delay(500);
-
-		for (const node of nodes) {
-			let n = node[1];
-			n.placeholderEl?.detach();
-			n.containerEl?.appendChild(n.contentEl);
-			n.render();
-		}
-
-		for (const edge of edges) {
-			await edge[1].render();
-		}
-
-		let contentEl = view.contentEl;
-		const canvasEl = contentEl.querySelector(".canvas");
-
-		if (!canvasEl)
-		{
-			console.log(contentEl.innerHTML);
-			return failRender(view.file, "Failed to render canvas! Canvas element not found!");	
-		}
-
-		const edgeContainer = canvasEl.createEl("svg", { cls: "canvas-edges" });
-		const edgeHeadContainer = canvasEl.createEl("svg", { cls: "canvas-edges" });
-
-		for (const pair of nodes) {
-			const node = pair[1]; // value is the node
-			const nodeEl = node.nodeEl;
-			const nodeFile: TFile | undefined = node.file ?? undefined;
-			const embedEl = nodeEl.querySelector(".markdown-embed-content.node-insert-event");
-			const childPreview = node?.child?.previewMode;
-
-			const optionsCopy = Object.assign({}, options);
-			optionsCopy.container = embedEl;
-			optionsCopy.unifyTitleFormat = (nodeFile && nodeFile != view.file) ?? false;
-
-			if (nodeFile && embedEl && childPreview) {
-				embedEl.innerHTML = "";
-
-				if ((options.inlineHTML || !allExportedPaths.contains(nodeFile.path)) && childPreview) {
-					console.log("Inlining child preview", nodeFile.path);
-					if (childPreview.owner) {
-						childPreview.owner.file =
-							childPreview.file ??
-							childPreview.owner.file ??
-							view.file;
-					}
-					childPreview.owner.file =
-						childPreview.file ??
-						childPreview.owner.file ??
-						view.file;
-				}
-
-				await renderMarkdownView(childPreview, optionsCopy);
-			}
-
-			if (node.url) {
-				const iframe = node.contentEl?.createEl("iframe");
-				if (iframe) {
-					iframe.src = node.url;
-					iframe.classList.add("canvas-link");
-					iframe.setAttribute("style", "border:none; width:100%; height:100%;");
-					iframe.setAttribute("title", "Canvas card with embedded webpage: " + node.url);
-				}
-			}
-
-			await delay(100);
-		}
-
-		for (const edge of edges) {
-			const edgeEl = edge[1].lineGroupEl;
-			const headEl = edge[1].lineEndGroupEl;
-
-			edgeContainer.appendChild(edgeEl);
-			edgeHeadContainer.appendChild(headEl);
-
-			if (edge[1].label) {
-				const labelEl = edge[1].labelElement.wrapperEl;
-				canvasEl.appendChild(labelEl);
-			}
-		}
-
-
-		if (checkCancelled()) return undefined;
-
-		for (const pair of nodes) {
-			const node = pair[1];
-			const nodeEl = node.nodeEl;
-			canvasEl.appendChild(nodeEl);
-		}
-
-		let newContentEl: HTMLElement;
-		if (options.createDocumentContainer === false) {
-			newContentEl = canvasEl.cloneNode(true) as HTMLElement;
-		}
-		else {
-			newContentEl = contentEl.cloneNode(true) as HTMLElement;
-		}
-
-		newContentEl?.querySelector(".mod-zoomed-out")?.classList?.remove("mod-zoomed-out");
-
-		options.container?.appendChild(newContentEl);
-
-
-		return newContentEl;
-	}
-
 	export async function createMediaPage(file: TFile, options: MarkdownRendererOptions): Promise<HTMLElement> {
 		const contentEl = batchDocument.body.createDiv({ attr: { class: "obsidian-document" } });
 		const embedType = MarkdownRendererAPI.extentionToTag(file.extension);
@@ -1094,9 +899,7 @@ export namespace _MarkdownRendererInternal {
 		}
 
 		// remove the extra elements if they are not wanted
-		if (!options.keepModHeaderFooter) {
-			html.querySelectorAll(".mod-header, .mod-footer").forEach((e: HTMLElement) => e.remove());
-		}
+		html.querySelectorAll(".mod-header, .mod-footer").forEach((e: HTMLElement) => e.remove());
 
 		// add .heading to every header
 		html.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((element: HTMLElement) => {
@@ -1131,14 +934,6 @@ export namespace _MarkdownRendererInternal {
 		html.querySelectorAll("textarea").forEach((element: HTMLElement) => {
 			// @ts-ignore
 			element.textContent = element.value;
-		});
-
-		// convert tag href to search query
-		html.querySelectorAll("a.tag").forEach((element: HTMLAnchorElement) => {
-			const split = element.href.split("#");
-			const tag = split[1] ?? element.href.substring(1); // remove the #
-			element.setAttribute("data-href", element.getAttribute("href") ?? "");
-			element.setAttribute("href", `?query=tag:${tag}`);
 		});
 
 		// convert all hard coded image / media widths into max widths
@@ -1465,7 +1260,6 @@ export namespace ExportLog {
 		// remove any properties starting with info_
 		object = SettingsPage.deepCopy(object);
 		object = SettingsPage.deepRemoveStartingWith(object, "info_");
-		object = SettingsPage.deepRemoveStartingWith(object, "filesToExport");
 		object = SettingsPage.deepRemoveStartingWith(object, "alwaysEnabled");
 		object = SettingsPage.deepRemoveStartingWith(object, "featureId");
 		const string = JSON.stringify(object, null, 2);

@@ -9,14 +9,14 @@ import { Settings } from "src/plugin/settings/settings";
 import { AssetHandler } from "./asset-handler";
 const { minify: runMinify } = require('html-minifier-terser');
 
-export class AssetLoader extends Attachment 
+export class AssetLoader extends Attachment
 {
     public type: AssetType; // what type of asset is this
     public inlinePolicy: InlinePolicy; // should this asset be inlined into the html file
 	public mutability: Mutability; // can this asset change
     public minify: boolean; // should the asset be minified
     public loadMethod: LoadMethod = LoadMethod.Default; // should this asset be loaded asynchronously if possible
-	public loadPriority: number = 100; // the priority of this asset when loading 
+	public loadPriority: number = 100; // the priority of this asset when loading
 	public onlineURL: string | undefined = undefined; // the link to the asset online
 	public childAssets: AssetLoader[] = []; // assets that depend on this asset
 
@@ -60,7 +60,6 @@ export class AssetLoader extends Attachment
 		"\\.leaf>.leaf-content": ".leaf .leaf-content",
 		"\\.markdown-reading-view": "#center-content",
 		"\\.markdown-preview-sizer|\\.markdown-preview-section": ".markdown-preview-sizer",
-		"\\.horizontal-main-container|\\.workspace": "#main-horizontal",
 	}
 
     public async load(): Promise<void>
@@ -69,7 +68,7 @@ export class AssetLoader extends Attachment
 		{
 			this.childAssets = [];
 			this.data = await AssetHandler.getStyleChildAssets(this, false);
-			
+
 			// replacements
 			for (const key in AssetLoader.replacements)
 			{
@@ -84,7 +83,7 @@ export class AssetLoader extends Attachment
         }
     }
 
-    override async download(): Promise<void> 
+    override async download(): Promise<void>
     {
         if (this.isInlineFormat(this.exportOptions)) return;
         await super.download();
@@ -141,9 +140,9 @@ export class AssetLoader extends Attachment
 			// add script or style tags so that minifier can minify it as html
 			if (isJS) tempContent = `<script>${tempContent}</script>`;
 			if (isCSS) tempContent = `<style>${tempContent}</style>`;
-			
+
 			tempContent = await runMinify(tempContent, { minifyCSS: isCSS, minifyJS: isJS, removeComments: true, collapseWhitespace: true});
-			
+
 			// remove the <script> or <style> tags
 			tempContent = tempContent.replace("<script>", "").replace("</script>", "").replace("<style>", "").replace("</style>", "");
 			this.data = tempContent;
@@ -160,20 +159,20 @@ export class AssetLoader extends Attachment
 	public getAssetPath(relativeFrom: Path | undefined = undefined): Path
 	{
 		if (this.isInlineFormat(this.exportOptions)) return new Path("");
-		
+
 		if (relativeFrom == undefined) relativeFrom = Path.rootPath;
 		const toRoot = Path.getRelativePath(relativeFrom, Path.rootPath);
 		const newPath = toRoot.join(this.targetPath);
 		newPath.slugify(this.exportOptions.slugifyPaths);
-		
+
 		return newPath;
 	}
 
 	protected isInlineFormat(options: ExportPipelineOptions): boolean
 	{
-		const isInlineFormat = this.inlinePolicy == InlinePolicy.Inline || 
-							 this.inlinePolicy == InlinePolicy.InlineHead || 
-							 ((this.inlinePolicy == InlinePolicy.Auto || this.inlinePolicy == InlinePolicy.AutoHead) && 
+		const isInlineFormat = this.inlinePolicy == InlinePolicy.Inline ||
+							 this.inlinePolicy == InlinePolicy.InlineHead ||
+							 ((this.inlinePolicy == InlinePolicy.Auto || this.inlinePolicy == InlinePolicy.AutoHead) &&
 							 (
 							 (options.inlineCSS! && this.type == AssetType.Style) ||
 							 (options.inlineJS! && this.type == AssetType.Script) ||
@@ -187,9 +186,9 @@ export class AssetLoader extends Attachment
 
 	protected isRefFormat(options: ExportPipelineOptions): boolean
 	{
-		const isRefFormat = this.inlinePolicy == InlinePolicy.Download || 
+		const isRefFormat = this.inlinePolicy == InlinePolicy.Download ||
 						  this.inlinePolicy == InlinePolicy.DownloadHead ||
-						  ((this.inlinePolicy == InlinePolicy.Auto || this.inlinePolicy == InlinePolicy.AutoHead) && 
+						  ((this.inlinePolicy == InlinePolicy.Auto || this.inlinePolicy == InlinePolicy.AutoHead) &&
 						  !((options.inlineCSS! && this.type == AssetType.Style) ||
 						  	(options.inlineJS! && this.type == AssetType.Script) ||
 						  	(options.inlineMedia! && this.type == AssetType.Media) ||
@@ -219,7 +218,7 @@ export class AssetLoader extends Attachment
                     return "";
             }
         }
-        
+
         if (this.isRefFormat(options))
         {
             let path = this.getAssetPath(undefined).path;
@@ -292,7 +291,7 @@ export class AssetLoader extends Attachment
 			case AssetType.HTML:
 				return "include";
 		}
-		
+
 		// media
 		const extension = this.extensionName;
 		const extToTag: {[key: string]: string} = {"png": "img", "jpg": "img", "jpeg": "img", "tiff": "img", "bmp": "img", "avif": "img", "apng": "img", "gif": "img", "svg": "img", "webp": "img", "ico": "img", "mp4": "video", "webm": "video", "ogg": "video", "3gp": "video", "mov": "video", "mpeg": "video", "mp3": "audio", "wav": "audio", "flac": "audio", "aac": "audio", "m4a": "audio", "opus": "audio", "pdf": "embed"};

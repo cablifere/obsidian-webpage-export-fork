@@ -1,5 +1,3 @@
-import { FilePreviewPopover } from "./link-preview";
-
 export class LinkHandler
 {
 
@@ -27,15 +25,6 @@ export class LinkHandler
 			if(target && !target.startsWith("http") && !ObsidianSite.documentExists(target))
 			{
 				link.classList.add("is-unresolved");
-			}
-			else if (link.classList.contains("internal-link"))
-			{
-				// Only initialize link preview if the feature is enabled
-				if (!ObsidianSite.metadata?.ignoreMetadata && 
-					ObsidianSite.metadata?.featureOptions?.linkPreview?.enabled)
-				{
-					FilePreviewPopover.initializeLink(link, target);
-				}
 			}
 		});
 	}

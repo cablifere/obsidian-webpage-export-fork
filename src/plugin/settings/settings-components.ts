@@ -2,8 +2,7 @@ import { getIcon, Modal, Setting, TextComponent } from "obsidian";
 import { Settings, SettingsPage } from "./settings";
 import { Path } from "src/plugin/utils/path";
 import { FileDialogs } from "src/plugin/utils/file-dialogs";
-import { FeatureOptions, FeatureRelation, FeatureSettingInfo } from "src/shared/features/feature-options-base";
-import { ExportPipelineOptions } from "src/plugin/website/pipeline-options";
+import { FeatureOptions, FeatureSettingInfo } from "src/shared/features/feature-options-base";
 import { i18n } from "../translations/language";
 
 export function createDivider(container: HTMLElement)
@@ -38,12 +37,12 @@ export function createText(container: HTMLElement, name: string, get: () => stri
 
 	const value = get();
 	if (value != "") errorText.setText(validation ? validation(value) : "");
-	
+
 	setting.setName(name)
 	if (desc != "") setting.setDesc(desc);
 	setting.addText((text) => text
 		.setValue(value)
-		.onChange(async (value) => 
+		.onChange(async (value) =>
 		{
 			const error = validation ? validation(value) : "";
 			if (error == "")
@@ -73,7 +72,7 @@ export function createDropdown(container: HTMLElement, name: string, get: () => 
 	setting.addDropdown((dropdown) => dropdown
 		.addOptions(newOptions)
 		.setValue(get())
-		.onChange(async (value) => 
+		.onChange(async (value) =>
 		{
 			set(value);
 			await SettingsPage.saveSettings();
@@ -89,13 +88,13 @@ export function createError(container: HTMLElement): HTMLElement
 	return error;
 }
 
-export function createFileInput(container: HTMLElement, get: () => string, set: (value: string) => void, 
+export function createFileInput(container: HTMLElement, get: () => string, set: (value: string) => void,
 options?: {name?: string, description?: string, placeholder?: string, defaultPath?: Path, makeRelativeToVault?: boolean, pickFolder?: boolean, validation?: (path: Path) => {valid: boolean, isEmpty: boolean, error: string}, browseButton?: boolean, onChanged?: (path: Path)=>void}): {fileInput: Setting, textInput: TextComponent, browseButton: HTMLElement | undefined}
 {
 	const getSafe = () => new Path(get() ?? "").makePlatformSafe();
 	const setSafe = (value: string) => set(new Path(value).makePlatformSafe().path);
 
-	const name = options?.name ?? ""; 
+	const name = options?.name ?? "";
 	const description = options?.description ?? "";
 	const placeholder = options?.placeholder ?? "Path to file...";
 	const defaultPath = options?.defaultPath ?? Path.vaultPath;
@@ -119,19 +118,19 @@ options?: {name?: string, description?: string, placeholder?: string, defaultPat
 	if (name == "" && description == "") fileInput.infoEl.style.display = "none";
 
 	let textEl: TextComponent;
-	fileInput.addText((text) => 
+	fileInput.addText((text) =>
 	{
 		textEl = text;
 		textInput = text;
 		text.inputEl.style.width = '100%';
 		text.setPlaceholder(placeholder)
 			.setValue(getSafe().path)
-			.onChange(async (value) => 
+			.onChange(async (value) =>
 			{
 				const path = new Path(value).makePlatformSafe();
 				const valid = validation(path);
 				errorMessage.setText(valid.error);
-				if (valid.valid) 
+				if (valid.valid)
 				{
 					errorMessage.setText("");
 					setSafe(value.replaceAll("\"", ""));
@@ -148,12 +147,12 @@ options?: {name?: string, description?: string, placeholder?: string, defaultPat
 		fileInput.addButton((button) =>
 		{
 			browseButtonEl = button.buttonEl;
-			button.setButtonText(i18n.browse).onClick(async () => 
+			button.setButtonText(i18n.browse).onClick(async () =>
 			{
 				let path = pickFolder ? await FileDialogs.showSelectFolderDialog(defaultPath) : await FileDialogs.showSelectFileDialog(defaultPath);
-				
+
 				if (!path) return;
-				
+
 				if (makeRelativeToVault)
 					path = Path.getRelativePathFromVault(path, true);
 
@@ -167,7 +166,7 @@ options?: {name?: string, description?: string, placeholder?: string, defaultPat
 					await SettingsPage.saveSettings();
 					textInput?.setValue(path.path);
 				}
-				
+
 				if (onChanged) onChanged(path);
 				// textInput?.onChanged();
 			});
@@ -207,7 +206,7 @@ export function generateSettingsFromObject(obj: any, container: HTMLElement)
 		const value = obj[key];
 		const type = typeof value;
 		const settinginfo: FeatureSettingInfo = obj["info_" + key];
-		
+
 		if (!settinginfo)
 		{
 			continue;
@@ -216,7 +215,7 @@ export function generateSettingsFromObject(obj: any, container: HTMLElement)
 		if (settinginfo.show === false) continue;
 
 		let description = settinginfo.description || "";
-				
+
 		let name = settinginfo.name;
 		if (!name || name == "")
 		{
@@ -225,7 +224,7 @@ export function generateSettingsFromObject(obj: any, container: HTMLElement)
 			name = name.replace(/([A-Z][a-z0-9])/gm, " $1").toLowerCase();
 			name = name.charAt(0).toUpperCase() + name.substring(1)
 		}
-		
+
 		if (settinginfo.dropdownOptions)
 		{
 			createDropdown(container, name, () => value, (v) => obj[key] = v, settinginfo.dropdownOptions, description);
@@ -253,7 +252,7 @@ export function generateSettingsFromObject(obj: any, container: HTMLElement)
 		if (Array.isArray(value))
 		{
 			const {section, sectionSetting} = createSectionGetSettings(container, name, description + " (Array with length: " + value.length + ")");
-	
+
 			for (let i = 0; i < value.length; i++)
 			{
 				const type = typeof value[i];
@@ -276,11 +275,11 @@ export function generateSettingsFromObject(obj: any, container: HTMLElement)
 				}
 			}
 
-			
+
 			sectionSetting.addExtraButton(button => button
 				.setIcon("plus")
 				.setTooltip("Add element")
-				.onClick(() => 
+				.onClick(() =>
 				{
 					setTimeout(() => section.setAttribute("open", "open"), 0);
 					const prevItem = obj[key].length > 0 ? obj[key][obj[key].length - 1] : {};
@@ -299,10 +298,10 @@ export function generateSettingsFromObject(obj: any, container: HTMLElement)
 			sectionSetting.addExtraButton(button => button
 				.setIcon("minus")
 				.setTooltip("Remove element")
-				.onClick(() => 
+				.onClick(() =>
 				{
 					setTimeout(() => section.setAttribute("open", "open"), 0);
-					if (obj[key].length <= 1) 
+					if (obj[key].length <= 1)
 						return;
 
 					obj[key].pop();
@@ -341,16 +340,14 @@ export function createFeatureSetting(container: HTMLElement, name: string, featu
 	let setting = new Setting(container).setName(name).setDesc(desc);
 
 	setting.setDisabled(feature.unavailable);
-	setting.setTooltip(feature.unavailable ? i18n.settings.unavailableSetting.format(Settings.exportPreset) : "", {delay: 0});
-	
+
 	if (!feature.alwaysEnabled)
 	{
-		setting.addToggle(toggle => 
+		setting.addToggle(toggle =>
 		{
-			toggle.setTooltip(feature.unavailable ? i18n.settings.unavailableSetting.format(Settings.exportPreset) : "", {delay: 0});
 			toggle.setDisabled(feature.unavailable);
 			toggle.setValue(feature.enabled)
-			toggle.onChange((value) => 
+			toggle.onChange((value) =>
 			{
 				feature.enabled = value;
 				SettingsPage.saveSettings();
@@ -359,10 +356,10 @@ export function createFeatureSetting(container: HTMLElement, name: string, featu
 	}
 
 	// Always add the settings button to maintain consistent spacing
-	setting.addExtraButton(button => 
+	setting.addExtraButton(button =>
 	{
 		button.setIcon("settings");
-		
+
 		if (feature.hideSettingsButton)
 		{
 			// Make the button invisible and non-interactive but still take up space
@@ -372,9 +369,8 @@ export function createFeatureSetting(container: HTMLElement, name: string, featu
 		}
 		else
 		{
-			button.setTooltip(feature.unavailable ? i18n.settings.unavailableSetting.format(Settings.exportPreset) : "", {delay: 0});
 			button.setDisabled(feature.unavailable);
-			button.onClick(() => 
+			button.onClick(() =>
 			{
 				// create a modal with all the feature's properties as settings
 				let modal = new Modal(app);
