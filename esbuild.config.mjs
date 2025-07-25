@@ -31,13 +31,13 @@ const regexReplacementPlugin = {
       if (result.outputFiles) {
         result.outputFiles.forEach(file => {
           console.log(`Processing file: ${file.path}`);
-          
+
           // Ensure the output directory exists
           ensureDirectoryExists(file.path);
-          
+
           // Access the raw text output
           let contents = file.text;
-          
+
           console.log("Original content length:", contents.length);
           // Apply regex replacements
           contents = contents
@@ -46,11 +46,11 @@ const regexReplacementPlugin = {
             // Remove require statements
             .replace(/var .+?__require\(.+?\);/gm, "")
 			.replace(/import_.+i18n.+;/gm, "'';");
-          
+
           console.log("Content length after replacements:", contents.length);
           // Add banner
           contents = banner + '\n' + contents;
-          
+
           // Write the file to disk
           try {
             fs.writeFileSync(file.path, contents);
@@ -77,7 +77,6 @@ await esbuild.build({
   platform: 'browser',
   outdir: "src/frontend/dist",
   tsconfig: "tsconfig.frontend.json",
-  watch: !prod,
   plugins: [regexReplacementPlugin],
   write: false, // Keep this false to allow the plugin to handle file writing
 }).then(() => {
@@ -120,7 +119,6 @@ await esbuild.build({
     ...builtins
   ],
   format: 'cjs',
-  watch: !prod,
   target: 'es2018',
   logLevel: "info",
   sourcemap: prod ? false : 'inline',
