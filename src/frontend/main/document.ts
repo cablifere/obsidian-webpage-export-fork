@@ -189,7 +189,6 @@ export class WebpageDocument {
 
 	public async postLoadInit(): Promise<WebpageDocument> {
 		this.findElements();
-		this.postProcess();
 
 		if (this.isMainDocument || this.isPreview) {
 			this.processHeaders();
@@ -219,35 +218,11 @@ export class WebpageDocument {
 
 	public processLists() {
 		const listEls = Array.from(
-			this.documentEl.querySelectorAll(
-				":is(ul, ol):not(:is(ul, ol) :is(ul, ol))"
-			)
+			this.documentEl.querySelectorAll(":is(ul, ol):not(:is(ul, ol) :is(ul, ol))")
 		);
 		this.lists = [];
 		for (const listEl of listEls) {
 			this.lists.push(new List(listEl as HTMLElement, undefined));
-		}
-	}
-
-	public postProcess() {
-		// make completed kanban checkboxes checked
-		this.documentEl
-			?.querySelectorAll(
-				".kanban-plugin__item.is-complete input[type='checkbox']"
-			)
-			.forEach((el: HTMLInputElement) => (el.checked = true));
-
-		// toggle list and header collapse CSS
-		if (!ObsidianSite.metadata.ignoreMetadata) {
-			this.documentEl?.classList.toggle(
-				"allow-fold-headings",
-				ObsidianSite.metadata.featureOptions.document
-					.allowFoldingHeadings
-			);
-			this.documentEl?.classList.toggle(
-				"allow-fold-lists",
-				ObsidianSite.metadata.featureOptions.document.allowFoldingLists
-			);
 		}
 	}
 

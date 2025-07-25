@@ -10,17 +10,6 @@ import { Theme } from "./theme";
 import { LinkHandler } from "./links";
 import { Shared } from "src/shared/shared";
 
-type Constructor<T> = new () => T;
-
-function isConstructor(value: any): value is Constructor<any> {
-	return (
-		typeof value === "function" &&
-		value.prototype &&
-		value.prototype.constructor === value &&
-		value.prototype.constructor.name !== "Object"
-	);
-}
-
 export class ObsidianWebsite {
 	public LinkHandler: LinkHandler = LinkHandler;
 
@@ -363,6 +352,7 @@ export class ObsidianWebsite {
 	public get deviceSize(): string {
 		return this._deviceSize;
 	}
+
 	private set deviceSize(size: string) {
 		this._deviceSize = size;
 	}
@@ -404,8 +394,7 @@ export class ObsidianWebsite {
 			);
 		}
 
-		const docWidthCSS =
-			this.metadata.featureOptions.documentWidth ?? "45em";
+		const docWidthCSS = this.metadata.documentWidth;
 
 		// calculate the css widths
 		const docWidth = getLengthInPixels(docWidthCSS, this.centerContentEl);
@@ -420,10 +409,6 @@ export class ObsidianWebsite {
 			document.body.classList.toggle("is-tablet", false);
 			document.body.classList.toggle("is-phone", false);
 		} else if (
-			widthNowInRange(
-				docWidth + leftWidth,
-				docWidth + leftWidth + rightWidth
-			) ||
 			widthNowInRange(769, 1024)
 		) {
 			this.deviceSize = "small screen";
@@ -432,7 +417,6 @@ export class ObsidianWebsite {
 			document.body.classList.toggle("is-tablet", false);
 			document.body.classList.toggle("is-phone", false);
 		} else if (
-			widthNowInRange(leftWidth + rightWidth, docWidth + leftWidth) ||
 			widthNowInRange(481, 768)
 		) {
 			this.deviceSize = "tablet";
@@ -441,7 +425,6 @@ export class ObsidianWebsite {
 			document.body.classList.toggle("is-tablet", true);
 			document.body.classList.toggle("is-phone", false);
 		} else if (
-			widthNowLessThan(leftWidth + rightWidth) ||
 			widthNowLessThan(480)
 		) {
 			this.deviceSize = "phone";

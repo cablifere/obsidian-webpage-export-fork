@@ -8,7 +8,6 @@ import { Utils } from "../utils/utils";
 export class WebpageTemplate {
 	private doc: Document;
 	private options: ExportPipelineOptions;
-	public deferredFeatures: {feature: HTMLElement, featureOptions: InsertedFeatureOptions}[] = [];
 
 	constructor (options: ExportPipelineOptions) {
 		this.options = options;
@@ -38,22 +37,7 @@ export class WebpageTemplate {
 			console.warn(`Feature with id ${featureOptions.featureId} already exists in the layout. Removing the existing feature.`);
 			existingFeature.remove();
 		}
-
-		let insertedSuccessfully = featureOptions.insertFeature(this.doc.documentElement, feature);
-
-		if (insertedSuccessfully) {
-			// check if there are any deferred features that can now be inserted
-			let deferredFeatures = this.deferredFeatures;
-			this.deferredFeatures = [];
-			for (let deferredFeature of deferredFeatures) {
-				if (deferredFeature.feature === feature) continue;
-				this.insertFeature(deferredFeature.feature, deferredFeature.featureOptions);
-			}
-		}
-		else {
-			// try to insert the feature later when new features are added
-			this.deferredFeatures.push({feature, featureOptions});
-		}
+		featureOptions.insertFeature(this.doc.documentElement, feature);
 	}
 
 	public insertFeatureString(feature: string, featureOptions: InsertedFeatureOptions): void {
@@ -65,10 +49,6 @@ export class WebpageTemplate {
 	}
 
 	public getDocElementInner(): string {
-		for (let feature of this.deferredFeatures) {
-			ExportLog.warning(`Could not insert feature ${feature.featureOptions.featureId} with placement: ${feature.featureOptions.featurePlacement}`);
-		}
-
 		return this.doc.documentElement.innerHTML;
 	}
 

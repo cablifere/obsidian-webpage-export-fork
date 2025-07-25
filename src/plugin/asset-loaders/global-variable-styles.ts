@@ -1,35 +1,27 @@
 import { AssetLoader } from "./base-asset.js";
 import { AssetType, InlinePolicy, LoadMethod, Mutability } from "./asset-types.js";
 
-export class GlobalVariableStyles extends AssetLoader
-{
-    constructor()
-    {
-        super("global-variable-styles.css", "", null, AssetType.Style, InlinePolicy.AutoHead, true, Mutability.Dynamic, LoadMethod.Async, 6);
-    }
+export class GlobalVariableStyles extends AssetLoader {
+  constructor() {
+    super("global-variable-styles.css", "", null, AssetType.Style, InlinePolicy.AutoHead, true, Mutability.Dynamic, LoadMethod.Async, 6);
+  }
 
-    override async load()
-    {
-        const bodyStyle = (document.body.getAttribute("style") ?? "").replaceAll("\"", "'").replaceAll("; ", " !important;\n\t");
-		let lineWidth = this.exportOptions.documentOptions.documentWidth || "40em";
-		if (!isNaN(Number(lineWidth))) lineWidth += "px";
+  override async load() {
+    const bodyStyle = (document.body.getAttribute("style") ?? "").replaceAll("\"", "'").replaceAll("; ", " !important;\n\t");
+    let lineWidth = this.exportOptions.documentWidth;
+    if (!isNaN(Number(lineWidth))) lineWidth += "px";
+    const lineWidthCss = `min(${lineWidth}, calc(100vw - 2em))`;
+    this.data = `
+      :root body {
+        --line-width: ${lineWidthCss};
+        --line-width-adaptive: ${lineWidthCss};
+        --file-line-width: ${lineWidthCss};
+      }
 
-		const lineWidthCss = `min(${lineWidth}, calc(100vw - 2em))`;
-		this.data =
-        `
-        :root body
-        {
-			--line-width: ${lineWidthCss};
-			--line-width-adaptive: ${lineWidthCss};
-			--file-line-width: ${lineWidthCss};
-        }
-
-		body
-        {
-            ${bodyStyle}
-        }
-        `
-
-        await super.load();
-    }
+      body {
+        ${bodyStyle}
+      }
+    `;
+    await super.load();
+  }
 }

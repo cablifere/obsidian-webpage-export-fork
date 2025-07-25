@@ -59,7 +59,7 @@ export class Attachment {
 
 	private removeRootFromPath(path: Path, allowSlugify: boolean = true) {
 		// remove the export root from the target path
-		const root = new Path(this.exportOptions.exportRoot ?? "").slugify(allowSlugify && this.exportOptions.slugifyPaths).path + "/";
+		const root = new Path("").slugify(allowSlugify && this.exportOptions.slugifyPaths).path + "/";
 		if (path.path.startsWith(root)) {
 			path.reparse(path.path.substring(root.length));
 		}

@@ -11,6 +11,7 @@ import { WebpageTemplate } from "./webpage-template";
 import { AssetHandler } from "src/plugin/asset-loaders/asset-handler";
 import { Webpage } from "./webpage";
 import { Utils } from "src/plugin/utils/utils";
+import { InsertedFeatureOptions, FeatureRelation, RelationType } from "src/shared/features/feature-options-base";
 
 export class Website {
 	public destination: Path;
@@ -33,9 +34,15 @@ export class Website {
 		await template.loadLayout();
 
 		// inject custom head content
-		if (this.exportOptions.customHeadOptions.enabled) {
+		if (this.exportOptions.customHeadSourcePath !== "") {
 			let string = AssetHandler.customHeadContent.getHTML(this.exportOptions);
-			template.insertFeatureString(string, this.exportOptions.customHeadOptions);
+			template.insertFeatureString(string, new InsertedFeatureOptions(
+				"custom-head",
+				new FeatureRelation(
+					"head",
+					RelationType.End
+				)
+			));
 		}
 	}
 
@@ -150,6 +157,13 @@ export class Website {
 			await Utils.delay(0);
 			this.index.addFiles(attachments);
 			await Utils.delay(0);
+
+			// only save the updated and new attachments
+			for (const attachment of attachments) {
+				if (attachment.hash !== this.index.oldWebsiteData?.fileInfo[attachment.targetPath.path]?.hash) {
+					await attachment.download();
+				}
+			}
 
 			const built = await webpage.build();
 			await Utils.delay(0);

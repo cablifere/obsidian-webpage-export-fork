@@ -56,21 +56,17 @@ export class Index {
 			if (!this.websiteData.webpages) this.websiteData.webpages = {};
 			if (!this.websiteData.fileInfo) this.websiteData.fileInfo = {};
 			if (!this.websiteData.sourceToTarget) this.websiteData.sourceToTarget = {};
-			this.websiteData.featureOptions = {
-				customHead: options.customHeadOptions,
-				documentWidth: options.documentWidth
-			};
+			this.websiteData.documentWidth = options.documentWidth;
 
 			// set global values
 			this.websiteData.modifiedTime = Date.now();
 			this.websiteData.siteName = this.website.exportOptions.siteName ?? "";
 			this.websiteData.vaultName = app.vault.getName();
-			this.websiteData.exportRoot = this.website.exportOptions.exportRoot ?? "";
 			this.websiteData.baseURL = "";
 			this.websiteData.pluginVersion = HTMLExportPlugin.pluginVersion;
 			this.websiteData.themeName = this.website.exportOptions.themeName ?? "Default";
 			this.websiteData.bodyClasses = await WebpageTemplate.getValidBodyClasses() ?? "";
-			this.websiteData.hasFavicon = this.exportOptions.faviconPath != "";
+			this.websiteData.hasFavicon = this.exportOptions.faviconPath !== "";
 		} catch (e) {
 			ExportLog.warning(e, "Failed to load metadata.json. Recreating metadata.");
 		}
@@ -108,7 +104,7 @@ export class Index {
 
 		this.deletedFiles.remove(file.targetPath.path);
 
-		if(!this.hadFile(key) || (file instanceof Attachment && file.hash !== "" && file.hash !== this.getOldFile(key)?.hash)) {
+		if(!this.hadFile(key) || (file.hash !== "" && file.hash !== "d41d8cd98f00b204e9800998ecf8427e" && file.hash !== this.getOldFile(key)?.hash)) {
 			isUpdated = true;
 		}
 
@@ -261,9 +257,9 @@ export class Index {
 			fileInfo.sourceSize = attachment.sourceStat.size;
 			fileInfo.sourcePath = attachment.sourcePath ?? "";
 			fileInfo.exportPath = exportPath;
-			fileInfo.type = AssetLoader.extentionToType(attachment.targetPath.extension);
+			fileInfo.type = AssetLoader.extensionToType(attachment.targetPath.extension);
 			fileInfo.data = null;
-			fileInfo.hash = attachment.filename;
+			fileInfo.hash = attachment.hash;
 
 			this.websiteData.fileInfo[key] = fileInfo;
 			if (!this.websiteData.attachments.includes(key)) this.websiteData.attachments.push(key);

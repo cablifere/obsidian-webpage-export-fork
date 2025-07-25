@@ -12,22 +12,22 @@ export class ObsidianStyles extends AssetLoader
 
 	static readonly obsidianStyleAlwaysFilter =
 	[
-		"cm-", "cm6", "workspace-", ":root", "CodeMirror", "xfa", "modal", "@-webkit", "leaf", "plugins", "-split", "empty-state", "search-result-", "mobile", "tablet", "phone", "linux", "macos", "mod-windows", "is-frameless", 
+		"cm-", "cm6", "workspace-", ":root", "CodeMirror", "xfa", "modal", "@-webkit", "leaf", "plugins", "-split", "empty-state", "search-result-", "mobile", "tablet", "phone", "linux", "macos", "mod-windows", "is-frameless",
 	]
 	static readonly obsidianStylesFilter =
 	["ghost", "pdf", "annotation", "data-main-rotation", "spread",
 	"load",  "setting", "filter", "decorator", "node-insert", "app-container",
-	"dictionary", "status", "windows", "titlebar", "source", "#main-horizontal",
-	"menu", "message", "suggestion", "prompt", 
-	"tab", "HyperMD", "workspace", "publish", 
-	"backlink", "sync", "vault",  
+	"dictionary", "status", "windows", "titlebar", "source",
+	"menu", "message", "suggestion", "prompt",
+	"tab", "HyperMD", "workspace", "publish",
+	"backlink", "sync", "vault",
 	"textLayer", "header",  "rename", "edit",
-	"progress", "native", "aria", "tooltip", 
-	"drop", "sidebar", 
+	"progress", "native", "aria", "tooltip",
+	"drop", "sidebar",
 	"is-hidden-frameless", "obsidian-app", "show-view-header",
 	"is-maximized", "is-translucent", "community", "Layer"];
 	static readonly stylesKeep = ["tree", "scrollbar", "input[type", "table", "markdown-rendered", "css-settings-manager", "inline-embed", "background", "token", "-plugin-"];
-    
+
     override async load()
     {
         this.data = "";

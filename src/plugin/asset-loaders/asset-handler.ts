@@ -23,9 +23,7 @@ import postcss from 'postcss';
 import safeParser from 'postcss-safe-parser';
 const mime = require('mime');
 
-
-export class AssetHandler
-{
+export class AssetHandler {
 	public static vaultPluginsPath: Path;
 
 	public static staticAssets: AssetLoader[] = [];
@@ -34,7 +32,7 @@ export class AssetHandler
 	public static temporaryAssets: AssetLoader[] = [];
 
 	// this path is used to generate the relative path to the images folder, likewise for the other paths
-    private static libraryFolder: Path;
+	private static libraryFolder: Path;
 	private static mediaFolder: Path;
 	private static jsFolder: Path;
 	private static cssFolder: Path;
@@ -43,39 +41,37 @@ export class AssetHandler
 
 	public static exportOptions: ExportPipelineOptions = new ExportPipelineOptions();
 
-    public static get libraryPath(): Path
-    {
+	public static get libraryPath(): Path {
 		if (!this.libraryFolder) this.initPaths();
-        return AssetHandler.libraryFolder.slugified(this.exportOptions.slugifyPaths);
-    }
-    public static get mediaPath(): Path
-    {
+		return AssetHandler.libraryFolder.slugified(this.exportOptions.slugifyPaths);
+  }
+
+	public static get mediaPath(): Path {
 		if (!this.mediaFolder) this.initPaths();
 		return AssetHandler.mediaFolder.slugified(this.exportOptions.slugifyPaths);
-    }
-    public static get jsPath(): Path
-    {
+	}
+
+	public static get jsPath(): Path {
 		if (!this.jsFolder) this.initPaths();
-        return AssetHandler.jsFolder.slugified(this.exportOptions.slugifyPaths);
-    }
-    public static get cssPath(): Path
-    {
+		return AssetHandler.jsFolder.slugified(this.exportOptions.slugifyPaths);
+	}
+
+	public static get cssPath(): Path {
 		if (!this.cssFolder) this.initPaths();
 		return AssetHandler.cssFolder.slugified(this.exportOptions.slugifyPaths);
-    }
-	public static get fontPath(): Path
-	{
+  }
+
+	public static get fontPath(): Path {
 		if (!this.fontFolder) this.initPaths();
 		return AssetHandler.fontFolder.slugified(this.exportOptions.slugifyPaths);
 	}
-    public static get htmlPath(): Path
-    {
+
+	public static get htmlPath(): Path {
 		if (!this.htmlFolder) this.initPaths();
 		return AssetHandler.htmlFolder.slugified(this.exportOptions.slugifyPaths);
-    }
+  }
 
-	public static generateSavePath(filename: string, type: AssetType, destinationDir: Path)
-	{
+	public static generateSavePath(filename: string, type: AssetType, destinationDir: Path) {
 		return AssetLoader.typeToDir(type).joinString(filename).setWorkingDirectory(destinationDir.path).slugified(this.exportOptions.slugifyPaths);
 	}
 
@@ -100,8 +96,7 @@ export class AssetHandler
 	public static mainJsModTime: number = 0;
 	public static mainJsPath: Path;
 
-	private static initPaths()
-	{
+	private static initPaths() {
 		this.libraryFolder = new Path(Shared.libFolderName);
 		this.mediaFolder = this.libraryFolder.joinString(Shared.mediaFolderName);
 		this.jsFolder = this.libraryFolder.joinString(Shared.scriptsFolderName);
@@ -111,8 +106,7 @@ export class AssetHandler
 		this.vaultPluginsPath = Path.vaultPath.joinString(app.vault.configDir, "plugins/").absolute();
 	}
 
-	public static async initialize()
-	{
+	public static async initialize() {
 		this.obsidianStyles = new ObsidianStyles();
 		this.otherPluginStyles = new OtherPluginStyles();
 		this.themeStyles = new ThemeStyles();
@@ -136,31 +130,24 @@ export class AssetHandler
 		this.allAssets.sort((a, b) => a.loadPriority - b.loadPriority);
 
 		const loadPromises = []
-		for (const asset of this.allAssets)
-		{
+		for (const asset of this.allAssets) {
 			loadPromises.push(asset.load());
 		}
 		await Promise.all(loadPromises);
 	}
 
-	public static async reloadAssets(options: ExportPipelineOptions)
-	{
+	public static async reloadAssets(options: ExportPipelineOptions) {
 		this.exportOptions = options;
 
 		// remove all temporary assets from allAssets
 		this.allAssets = this.allAssets.filter(asset => asset.mutability != Mutability.Temporary);
 		this.temporaryAssets = [];
 
-		let i = 0;
-
 		const loadPromises = []
 		ExportLog.addToProgressCap(this.dynamicAssets.length / 4);
-		for (const asset of this.dynamicAssets)
-		{
+		for (const asset of this.dynamicAssets) {
 			const loadPromise = asset.load();
-			loadPromise.then(() =>
-			{
-				i++;
+			loadPromise.then(() => {
 				ExportLog.progress(0.25, "Initialize Export", "Loading asset: " + asset.filename, "var(--color-yellow)");
 			});
 			loadPromises.push(loadPromise);
@@ -168,29 +155,24 @@ export class AssetHandler
 		await Promise.all(loadPromises);
 	}
 
-	public static getAssetsOfType(type: AssetType): AssetLoader[]
-	{
+	public static getAssetsOfType(type: AssetType): AssetLoader[] {
 		let assets = this.allAssets.filter(asset => asset.type == type);
 		assets = assets.concat(this.allAssets.map(asset => asset.childAssets).flat().filter(asset => asset.type == type));
 		return assets;
 	}
 
-	public static getAssetsOfInlinePolicy(inlinePolicy: InlinePolicy): AssetLoader[]
-	{
+	public static getAssetsOfInlinePolicy(inlinePolicy: InlinePolicy): AssetLoader[] {
 		let assets = this.allAssets.filter(asset => asset.inlinePolicy == inlinePolicy);
 		assets = assets.concat(this.allAssets.map(asset => asset.childAssets).flat().filter(asset => asset.inlinePolicy == inlinePolicy));
 		return assets;
 	}
 
-	private static filterDownloads(downloads: AssetLoader[], options: ExportPipelineOptions): AssetLoader[]
-	{
-		if (!options.includeCSS)
-		{
+	private static filterDownloads(downloads: AssetLoader[], options: ExportPipelineOptions): AssetLoader[] {
+		if (!options.includeCSS) {
 			downloads = downloads.filter(asset => asset.type != AssetType.Style);
 		}
 
-		if (!options.includeJS)
-		{
+		if (!options.includeJS) {
 			downloads = downloads.filter(asset => asset.type != AssetType.Script);
 		}
 
@@ -203,55 +185,50 @@ export class AssetHandler
 		return downloads;
 	}
 
-	public static getDownloads(destination: Path, options: ExportPipelineOptions): AssetLoader[]
-	{
+	public static getDownloads(destination: Path, options: ExportPipelineOptions): AssetLoader[] {
 		let downloads = this.getAssetsOfInlinePolicy(InlinePolicy.Download)
-						    .concat(this.getAssetsOfInlinePolicy(InlinePolicy.DownloadHead))
-							.concat(this.getAssetsOfInlinePolicy(InlinePolicy.Auto))
-							.concat(this.getAssetsOfInlinePolicy(InlinePolicy.AutoHead));
+			.concat(this.getAssetsOfInlinePolicy(InlinePolicy.DownloadHead))
+			.concat(this.getAssetsOfInlinePolicy(InlinePolicy.Auto))
+			.concat(this.getAssetsOfInlinePolicy(InlinePolicy.AutoHead));
 
 		downloads = this.filterDownloads(downloads, options);
 		downloads.sort((a, b) => b.loadPriority - a.loadPriority);
 		downloads.forEach(asset => asset.targetPath.setWorkingDirectory(destination.path));
 
-		if (options.inlineMedia)
-		{
-			downloads = downloads.filter(asset => asset.type != AssetType.Media);
+		if (options.inlineMedia) {
+			downloads = downloads.filter(asset => asset.type !== AssetType.Media);
 		}
-		if (options.inlineFonts)
-		{
-			downloads = downloads.filter(asset => asset.type != AssetType.Font);
+
+		if (options.inlineFonts) {
+			downloads = downloads.filter(asset => asset.type !== AssetType.Font);
 		}
-		if (options.inlineJS)
-		{
-			// keep wasm and render worker as downloaded always (they cannot be inlined)
-			downloads = downloads.filter(asset => asset.type != AssetType.Script || (asset.extensionName == "wasm" || asset.filename == this.renderWorkerJS.filename));
+
+		if (options.inlineJS) {
+			downloads = downloads.filter(asset => asset.type !== AssetType.Script);
 		}
-		if (options.inlineCSS)
-		{
-			downloads = downloads.filter(asset => asset.type != AssetType.Style);
+
+		if (options.inlineCSS) {
+			downloads = downloads.filter(asset => asset.type !== AssetType.Style);
 		}
-		if (options.inlineHTML)
-		{
-			downloads = downloads.filter(asset => asset.type != AssetType.HTML);
+
+		if (options.inlineHTML) {
+			downloads = downloads.filter(asset => asset.type !== AssetType.HTML);
 		}
 
 		return downloads;
 	}
 
-	public static getHeadReferences(options: ExportPipelineOptions): string
-	{
+	public static getHeadReferences(options: ExportPipelineOptions): string {
 		let head = "";
 
 		let referenceAssets = this.getAssetsOfInlinePolicy(InlinePolicy.DownloadHead)
-								  .concat(this.getAssetsOfInlinePolicy(InlinePolicy.AutoHead))
-								  .concat(this.getAssetsOfInlinePolicy(InlinePolicy.InlineHead));
+			.concat(this.getAssetsOfInlinePolicy(InlinePolicy.AutoHead))
+			.concat(this.getAssetsOfInlinePolicy(InlinePolicy.InlineHead));
 
 		referenceAssets = this.filterDownloads(referenceAssets, options);
 		referenceAssets.sort((a, b) => b.loadPriority - a.loadPriority);
 
-		for (const asset of referenceAssets)
-		{
+		for (const asset of referenceAssets) {
 			head += asset.getHTML(options);
 		}
 
@@ -259,8 +236,7 @@ export class AssetHandler
 	}
 
 	/*Takes a style sheet string and creates assets from every font or image url embedded in it*/
-	public static async getStyleChildAssets(asset: AssetLoader, makeBase64External: boolean = false): Promise<string>
-	{
+	public static async getStyleChildAssets(asset: AssetLoader, makeBase64External: boolean = false): Promise<string> {
 		if (typeof asset.data != "string") throw new Error("Asset content is not a string");
 
 		let content = asset.data.replaceAll("app://obsidian.md/", "");
@@ -271,9 +247,8 @@ export class AssetHandler
 		urls = urls.filter((url, index, self) => self.findIndex((t) => t[0] === url[0]) === index);
 
 		// use this mutability for child assets
-        const promises = [];
-		for (const urlObj of urls)
-		{
+		const promises = [];
+		for (const urlObj of urls) {
 			let url = urlObj[1] || urlObj[2];
 			url = url.trim();
 
@@ -282,15 +257,13 @@ export class AssetHandler
 
 			if (url == "") continue;
 
-			if (url.startsWith("data:"))
-			{
-				if (!this.exportOptions.inlineMedia && makeBase64External)
-				{
+			if (url.startsWith("data:")) {
+				if (!this.exportOptions.inlineMedia && makeBase64External) {
 					// decode the base64 data and create an Asset from it
 					// then replace the url with the relative path to the asset
 
-					function hash(str:string, seed = 0) // taken from https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
-					{
+					// taken from https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+					function hash(str:string, seed = 0) {
 						let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
 						for(let i = 0, ch; i < str.length; i++) {
 							ch = str.charCodeAt(i);
@@ -307,26 +280,23 @@ export class AssetHandler
 
 					const splitData = url.split(",")
 					const data = splitData.slice(1).join(",");
-					let extension = AssetLoader.mimeToExtention(splitData[0].split(":")[1].split(";")[0]);
+					let extension = AssetLoader.mimeToExtension(splitData[0].split(":")[1].split(";")[0]);
 					const buffer = Buffer.from(data, "base64");
 					const dataHash = hash(data);
 					let filename = `${dataHash}.${extension}`;
-					if (extension == '')
-					{
+					if (extension == '') {
 						const type = await fileTypeFromBuffer(buffer);
 						if (type) extension = type.ext;
 						filename = `${dataHash}.${extension}`;
 					}
-					const type = AssetLoader.extentionToType(extension);
+					const type = AssetLoader.extensionToType(extension);
 
 					const childAsset = new AssetLoader(filename, buffer, null, type, InlinePolicy.Download, false, Mutability.Child);
 					asset.childAssets.push(childAsset);
 					const loadPromise = childAsset.load();
 					promises.push(loadPromise);
-					loadPromise.then(() =>
-					{
-						if (childAsset.data == undefined || childAsset.data == null || childAsset.data.length == 0)
-						{
+					loadPromise.then(() => {
+						if (childAsset.data == undefined || childAsset.data == null || childAsset.data.length == 0) {
 							return;
 						}
 
@@ -338,37 +308,32 @@ export class AssetHandler
 			}
 
 			const path = new Path(url);
-			if (path.isDirectory || path.isEmpty)
-			{
+			if (path.isDirectory || path.isEmpty) {
 				continue;
 			}
-			const type = AssetLoader.extentionToType(path.extension);
+			const type = AssetLoader.extensionToType(path.extension);
 			const childAsset = new FetchBuffer(path.fullName, url, type, InlinePolicy.Download, false, Mutability.Child);
 			asset.childAssets.push(childAsset);
 
 			const loadPromise = childAsset.load();
 			promises.push(loadPromise);
-			loadPromise.then(() =>
-			{
-				if (childAsset.data == undefined || childAsset.data == null || childAsset.data.length == 0)
-				{
+			loadPromise.then(() => {
+				if (childAsset.data == undefined || childAsset.data == null || childAsset.data.length == 0) {
 					return;
 				}
 
-				function addAsBase64()
-				{
+				function addAsBase64() {
 					const base64 = childAsset.data.toString("base64");
 					content = content.replaceAll(url, `data:${mime.getType(url)};base64,${base64}`);
 				}
 
-				if ((this.exportOptions.inlineMedia && type == AssetType.Media) ||
-					(this.exportOptions.inlineFonts && type == AssetType.Font) ||
-					(this.exportOptions.inlineCSS && type == AssetType.Style) ||
-					(this.exportOptions.inlineJS && type == AssetType.Script) ||
-					(this.exportOptions.inlineHTML && type == AssetType.HTML))
+				if ((this.exportOptions.inlineMedia && type === AssetType.Media) ||
+					(this.exportOptions.inlineFonts && type === AssetType.Font) ||
+					(this.exportOptions.inlineCSS && type === AssetType.Style) ||
+					(this.exportOptions.inlineJS && type === AssetType.Script) ||
+					(this.exportOptions.inlineHTML && type === AssetType.HTML))
 					addAsBase64();
-				else
-				{
+				else {
 					const newPath = childAsset.getAssetPath(asset.getAssetPath());
 					content = content.replaceAll(url, newPath.path);
 				}
@@ -381,59 +346,56 @@ export class AssetHandler
 	}
 
 	private static async filterStyleRulesCore(
-        cssContent: string,
-        alwaysDiscard: string[],
-        discard: string[],
-        keep: string[]
-    ): Promise<string> {
-        const result = await postcss([
-            (root: postcss.Root) => {
-                root.walkRules((rule: postcss.Rule) => {
-                    const filteredSelectors = rule.selectors.filter((selector: string) => {
-                        const selectorParts = selector.split(/[\s.#:>+~]+/).filter(Boolean);
+		cssContent: string,
+		alwaysDiscard: string[],
+		discard: string[],
+		keep: string[]
+	): Promise<string> {
+		const result = await postcss([(root: postcss.Root) => {
+			root.walkRules((rule: postcss.Rule) => {
+				const filteredSelectors = rule.selectors.filter((selector: string) => {
+					const selectorParts = selector.split(/[\s.#:>+~]+/).filter(Boolean);
 
-                        if (selectorParts.some(part => alwaysDiscard.some(d => part.includes(d)))) {
-                            return false;
-                        }
+					if (selectorParts.some(part => alwaysDiscard.some(d => part.includes(d)))) {
+						return false;
+					}
 
-                        if (selectorParts.some(part => keep.some(k => part.includes(k)))) {
-                            return true;
-                        }
+					if (selectorParts.some(part => keep.some(k => part.includes(k)))) {
+						return true;
+					}
 
-                        return !selectorParts.some(part => discard.some(d => part.includes(d)));
-                    });
+					return !selectorParts.some(part => discard.some(d => part.includes(d)));
+				});
 
-                    if (filteredSelectors.length === 0) {
-                        rule.remove();
-                    } else if (filteredSelectors.length !== rule.selectors.length) {
-                        rule.selectors = filteredSelectors;
-                    }
-                });
-            }
-        ]).process(cssContent, {
-            from: undefined,
-            parser: safeParser
-        });
+				if (filteredSelectors.length === 0) {
+					rule.remove();
+				} else if (filteredSelectors.length !== rule.selectors.length) {
+					rule.selectors = filteredSelectors;
+				}
+			});
+		}]).process(cssContent, {
+			from: undefined,
+			parser: safeParser
+		});
 
-        return result.css;
-    }
+		return result.css;
+	}
 
-    public static async filterStyleRules(
-        input: CSSStyleSheet | string,
-        alwaysDiscard: string[],
-        discard: string[],
-        keep: string[]
-    ): Promise<string> {
-        let cssContent: string;
+	public static async filterStyleRules(
+		input: CSSStyleSheet | string,
+		alwaysDiscard: string[],
+		discard: string[],
+		keep: string[]
+	): Promise<string> {
+		let cssContent: string;
 
-        if (typeof input === 'string') {
-            cssContent = input;
-        } else {
-            const cssRules: CSSRule[] = Array.from(input.cssRules);
-            cssContent = cssRules.map(rule => rule.cssText).join('\n');
-        }
+		if (typeof input === 'string') {
+			cssContent = input;
+		} else {
+			const cssRules: CSSRule[] = Array.from(input.cssRules);
+			cssContent = cssRules.map(rule => rule.cssText).join('\n');
+		}
 
-        return this.filterStyleRulesCore(cssContent, alwaysDiscard, discard, keep);
-    }
-
+		return this.filterStyleRulesCore(cssContent, alwaysDiscard, discard, keep);
+	}
 }

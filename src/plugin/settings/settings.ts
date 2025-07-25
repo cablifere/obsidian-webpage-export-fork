@@ -1,16 +1,13 @@
-import { Notice, Plugin, PluginSettingTab, Setting, TFile, TFolder, getIcon } from 'obsidian';
+import { Notice, Plugin, PluginSettingTab, Setting, getIcon } from 'obsidian';
 import { Path } from 'src/plugin/utils/path';
 import pluginStylesBlacklist from 'src/assets/third-party-styles-blacklist.txt';
 import { ExportLog } from 'src/plugin/render-api/render-api';
-import { createDivider, createDropdown, createFeatureSetting, createFileInput, createText, createToggle }  from './settings-components';
+import { createDivider, createDropdown, createFileInput, createText, createToggle }  from './settings-components';
 import { ExportPipelineOptions } from "src/plugin/website/pipeline-options.js";
 import { FlowList } from 'src/plugin/features/flow-list';
 import { i18n } from '../translations/language';
-import { error } from 'console';
 import { EmojiStyle } from 'src/shared/website-data';
 import supportedStyleIds from "src/assets/plugin-style-ids.json";
-import { SupportedPluginStyles } from '../asset-loaders/supported-plugin-styles';
-import postcss from 'postcss';
 import safeParser from 'postcss-safe-parser';
 
 // #region Settings Definition
@@ -124,17 +121,18 @@ export class SettingsPage extends PluginSettingTab {
 
 		// #endregion
 
-		// #region Page Features
-
-		createDivider(container);
-
 		const section = container.createEl('div');
+
+		createDivider(section);
+
+		// #region Export Features
+
 		createFileInput(section,
-			() => Settings.exportOptions.exportRoot,
-			(value) => Settings.exportOptions.exportRoot = value,
+			() => Settings.exportOptions.exportPath,
+			(value) => Settings.exportOptions.exportPath = value,
 			{
-				name: lang.exportRoot.title,
-				description: lang.exportRoot.description,
+				name: lang.exportPath.title,
+				description: lang.exportPath.description,
 				placeholder: i18n.pathInputPlaceholder,
 				makeRelativeToVault: false,
 				pickFolder: true,
@@ -150,7 +148,20 @@ export class SettingsPage extends PluginSettingTab {
 				browseButton: true,
 			});
 
-		createFeatureSetting(section, lang.customHead.title,		Settings.exportOptions.customHeadOptions,		lang.customHead.description);
+		createText(section, lang.exportBlacklist.title,
+			() => Settings.exportOptions.exportBlacklist,
+			(value) => Settings.exportOptions.exportBlacklist = value,
+			lang.exportBlacklist.description);
+
+		createText(section, lang.siteName.title,
+			() => Settings.exportOptions.siteName,
+			(value) => Settings.exportOptions.siteName = value,
+			lang.siteName.description);
+
+		createText(section, lang.titleProperty.title,
+			() => Settings.titleProperty,
+			(value) => Settings.titleProperty = value,
+			lang.titleProperty.description);
 
 		createFileInput(section,
 			() => Settings.exportOptions.faviconPath,
@@ -161,37 +172,59 @@ export class SettingsPage extends PluginSettingTab {
 				placeholder: i18n.pathInputPlaceholder,
 				makeRelativeToVault: true,
 				pickFolder: false,
-				validation: (path) => path.validate(
-					{
-						allowEmpty: true,
-						allowAbsolute: true,
-						allowRelative: true,
-						allowFiles: true,
-						requireExists: true,
-						requireExtentions: ["png", "ico", "jpg", "jpeg", "svg"]
-					}),
+				validation: (path) => path.validate({
+					allowEmpty: true,
+					allowAbsolute: true,
+					allowRelative: true,
+					allowFiles: true,
+					allowDirectories: false,
+					requireExists: true,
+					requireExtensions: ["png", "ico", "jpg", "jpeg", "svg"]
+				}),
 				browseButton: true,
 			});
 
-		createText(section, lang.document.title,
-			() => Settings.exportOptions.documentWidth,
-			(value) => Settings.exportOptions.documentWidth = value,
-			lang.document.info_documentWidth);
+		createFileInput(section,
+			() => Settings.exportOptions.customHeadSourcePath,
+			(value) => Settings.exportOptions.customHeadSourcePath = value,
+			{
+				name: lang.customHeadSourcePath.title,
+				description: lang.customHeadSourcePath.description,
+				placeholder: i18n.pathInputPlaceholder,
+				makeRelativeToVault: true,
+				pickFolder: false,
+				validation: (path) => path.validate({
+					allowEmpty: true,
+					allowAbsolute: true,
+					allowRelative: true,
+					allowFiles: true,
+					allowDirectories: false,
+					requireExists: true,
+					requireExtensions: ["html"]
+				}),
+				browseButton: true,
+			});
 
-		createText(section, lang.siteName.title,
-			() => Settings.exportOptions.siteName,
-			(value) => Settings.exportOptions.siteName = value,
-			lang.siteName.description);
+		createToggle(section, lang.slugifyPaths.title,
+			() => Settings.exportOptions.slugifyPaths,
+			(value) => Settings.exportOptions.slugifyPaths = value,
+			lang.slugifyPaths.description);
+
+		createToggle(section, lang.flattenExportPaths.title,
+			() => Settings.exportOptions.flattenExportPaths,
+			(value) => Settings.exportOptions.flattenExportPaths = value,
+			lang.flattenExportPaths.description);
+
+		createToggle(section, lang.makeOfflineCompatible.title,
+			() => Settings.exportOptions.offlineResources,
+			(value) => Settings.exportOptions.offlineResources = value,
+			lang.makeOfflineCompatible.description);
 
 		// #endregion
 
-		//#region Style Settings
+		createDivider(section);
 
-		createDropdown(section, lang.iconEmojiStyle.title,
-			() => Settings.exportOptions.iconEmojiStyle,
-			(value) => Settings.exportOptions.iconEmojiStyle = value as EmojiStyle,
-			EmojiStyle,
-			lang.iconEmojiStyle.description);
+		// #region Style Settings
 
 		createDropdown(section, lang.themeName.title,
 			// @ts-ignore
@@ -200,14 +233,39 @@ export class SettingsPage extends PluginSettingTab {
 			this.getInstalledThemesRecord(),
 			lang.themeName.description);
 
+		createDropdown(section, lang.iconEmojiStyle.title,
+			() => Settings.exportOptions.iconEmojiStyle,
+			(value) => Settings.exportOptions.iconEmojiStyle = value as EmojiStyle,
+			EmojiStyle,
+			lang.iconEmojiStyle.description);
+
+		createToggle(section, lang.addPageIcon.title,
+			() => Settings.exportOptions.addPageIcon,
+			(value) => Settings.exportOptions.addPageIcon = value,
+			lang.addPageIcon.description);
+
+		createToggle(section, lang.unifyTitleFormat.title,
+			() => Settings.exportOptions.unifyTitleFormat,
+			(value) => Settings.exportOptions.unifyTitleFormat = value,
+			lang.unifyTitleFormat.description);
+
+		createText(section, lang.documentWidth.title,
+			() => Settings.exportOptions.documentWidth,
+			(value) => Settings.exportOptions.documentWidth = value,
+			lang.documentWidth.description);
+
+		createToggle(section, lang.relativeHeaderLinks.title,
+			() => Settings.exportOptions.relativeHeaderLinks,
+			(value) => Settings.exportOptions.relativeHeaderLinks = value,
+			lang.relativeHeaderLinks.description);
+
 		new Setting(section)
 			.setName(lang.includeStyleCssIds.title)
 			.setDesc(lang.includeStyleCssIds.description)
 
 		const styleIdsList = new FlowList();
 		styleIdsList.generate(section);
-		this.getStyleTagIds().forEach(async (plugin) =>
-		{
+		this.getStyleTagIds().forEach(async (plugin) => {
 			if (supportedStyleIds.ids.contains(plugin) || supportedStyleIds.ignoreIds.contains(plugin)) return;
 
 			const isChecked = Settings.exportOptions.includeStyleCssIds.contains(plugin);
@@ -242,32 +300,66 @@ export class SettingsPage extends PluginSettingTab {
 
 			const isChecked = Settings.exportOptions.includePluginCss.contains(plugin);
 
-			styleIdsList.addItem(pluginManifest.name, plugin, isChecked, (value) => {
-				Settings.exportOptions.includePluginCss = styleIdsList.checkedList;
+			pluginsList.addItem(pluginManifest.name, plugin, isChecked, (value) => {
+				Settings.exportOptions.includePluginCss = pluginsList.checkedList;
 				SettingsPage.saveSettings();
 			});
 		});
 
-		//#endregion
+		// #endregion
 
-		//#region Export Settings
+		createDivider(section);
 
-		createToggle(section, lang.relativeHeaderLinks.title,
-			() => Settings.exportOptions.relativeHeaderLinks,
-			(value) => Settings.exportOptions.relativeHeaderLinks = value,
-			lang.relativeHeaderLinks.description);
+		// #region Export Settings
 
-		createToggle(section, lang.slugifyPaths.title,
-			() => Settings.exportOptions.slugifyPaths,
-			(value) => Settings.exportOptions.slugifyPaths = value,
-			lang.slugifyPaths.description);
+		createToggle(section, lang.addHeadTag.title,
+			() => Settings.exportOptions.addHeadTag,
+			(value) => Settings.exportOptions.addHeadTag = value,
+			lang.addHeadTag.description);
 
-		createToggle(section, lang.makeOfflineCompatible.title,
-			() => Settings.exportOptions.offlineResources,
-			(value) => Settings.exportOptions.offlineResources = value,
-			lang.makeOfflineCompatible.description);
+		createToggle(section, lang.addBodyClasses.title,
+			() => Settings.exportOptions.addBodyClasses,
+			(value) => Settings.exportOptions.addBodyClasses = value,
+			lang.addBodyClasses.description);
+
+		createToggle(section, lang.includeJs.title,
+			() => Settings.exportOptions.includeJS,
+			(value) => Settings.exportOptions.includeJS = value,
+			lang.includeJs.description);
+
+		createToggle(section, lang.includeCss.title,
+			() => Settings.exportOptions.includeCSS,
+			(value) => Settings.exportOptions.includeCSS = value,
+			lang.includeCss.description);
+
+		createToggle(section, lang.inlineJs.title,
+			() => Settings.exportOptions.inlineJS,
+			(value) => Settings.exportOptions.inlineJS = value,
+			lang.inlineJs.description);
+
+		createToggle(section, lang.inlineCss.title,
+			() => Settings.exportOptions.inlineCSS,
+			(value) => Settings.exportOptions.inlineCSS = value,
+			lang.inlineCss.description);
+
+		createToggle(section, lang.inlineMedia.title,
+			() => Settings.exportOptions.inlineMedia,
+			(value) => Settings.exportOptions.inlineMedia = value,
+			lang.inlineMedia.description);
+
+		createToggle(section, lang.inlineFonts.title,
+			() => Settings.exportOptions.inlineFonts,
+			(value) => Settings.exportOptions.inlineFonts = value,
+			lang.inlineFonts.description);
+
+		createToggle(section, lang.inlineOther.title,
+			() => Settings.exportOptions.inlineOther,
+			(value) => Settings.exportOptions.inlineOther = value,
+			lang.inlineOther.description);
 
 		// #endregion
+
+		createDivider(section);
 
 		// #region Obsidian Settings
 
@@ -276,11 +368,6 @@ export class SettingsPage extends PluginSettingTab {
 			(value) => Settings.logLevel = value as LogLevel,
 			LogLevel,
 			lang.logLevel.description);
-
-		createText(section, lang.titleProperty.title,
-			() => Settings.titleProperty,
-			(value) => Settings.titleProperty = value,
-			lang.titleProperty.description);
 
 		// #endregion
 	}
@@ -305,11 +392,9 @@ export class SettingsPage extends PluginSettingTab {
 	getPluginIDs(): string[] {
 		/*@ts-ignore*/
 		const pluginsArray: string[] = Array.from(app.plugins.enabledPlugins.values()) as string[];
-		for (let i = 0; i < pluginsArray.length; i++)
-		{
+		for (let i = 0; i < pluginsArray.length; i++) {
 			/*@ts-ignore*/
-			if (app.plugins.manifests[pluginsArray[i]] == undefined)
-			{
+			if (app.plugins.manifests[pluginsArray[i]] === undefined) {
 				pluginsArray.splice(i, 1);
 				i--;
 			}
@@ -386,66 +471,66 @@ export class SettingsPage extends PluginSettingTab {
 			// @ts-ignore
 			const styleID = stylesheets[i].ownerNode?.id;
 
-			if (!styleID || styleID == "") {
-				// first check if it has any non-statandard attributes that can be used to uniquely identify it
+			if (!styleID || styleID === "") {
+				// first check if it has any non-standard attributes that can be used to uniquely identify it
                 // @ts-ignore
-                const attributes = stylesheets[i].ownerNode?.attributes;
-                if (attributes) {
-                    // First try to find most meaningful data attribute
-                    const priorityPrefixes = ['source-plugin', 'type', 'name', 'source'];
-                    let foundPriorityAttr = false;
+				const attributes = stylesheets[i].ownerNode?.attributes;
+				if (attributes) {
+					// First try to find most meaningful data attribute
+					const priorityPrefixes = ['source-plugin', 'type', 'name', 'source'];
+					let foundPriorityAttr = false;
 
-                    for (const prefix of priorityPrefixes) {
-                        const attr = Array.from(attributes).find((a: Attr) => a.name === `data-${prefix}`);
-                        if (attr) {
-                            // @ts-ignore
-                            stylesheets[i].ownerNode.id = `${prefix}-${attr.value}-stylesheet`;
-                            foundPriorityAttr = true;
-                            break;
-                        }
-                    }
+					for (const prefix of priorityPrefixes) {
+						const attr = Array.from(attributes).find((a: Attr) => a.name === `data-${prefix}`);
+						if (attr) {
+							// @ts-ignore
+							stylesheets[i].ownerNode.id = `${prefix}-${attr.value}-stylesheet`;
+							foundPriorityAttr = true;
+							break;
+						}
+					}
 
-                    if (!foundPriorityAttr) {
-                        // Collect all data attributes
-                        const dataAttrs = Array.from(attributes)
-                            .filter((attr: Attr) => attr.name.startsWith('data-'))
-                            .map((attr: Attr) => ({
-                                name: attr.name.substring(5),
-                                value: attr.value
-                            }));
+					if (!foundPriorityAttr) {
+						// Collect all data attributes
+						const dataAttrs = Array.from(attributes)
+							.filter((attr: Attr) => attr.name.startsWith('data-'))
+							.map((attr: Attr) => ({
+								name: attr.name.substring(5),
+								value: attr.value
+							}));
 
-                        if (dataAttrs.length > 0) {
-                            // Combine all data attributes into ID
-                            const id = dataAttrs
-                                .map(attr => `${attr.name}${attr.value ? `-${attr.value}` : ''}`)
-                                .join('-');
-                            // @ts-ignore
-                            stylesheets[i].ownerNode.id = `${id}-stylesheet`;
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-                }
+						if (dataAttrs.length > 0) {
+							// Combine all data attributes into ID
+							const id = dataAttrs
+									.map(attr => `${attr.name}${attr.value ? `-${attr.value}` : ''}`)
+									.join('-');
+							// @ts-ignore
+							stylesheets[i].ownerNode.id = `${id}-stylesheet`;
+							continue;
+						}
+					} else {
+						continue;
+					}
+				}
 
-                // Check for other unique attributes if no data- attributes found
-                let hasUniqueAttr = false;
-                if (attributes) {
-                    for (const attr of attributes) {
-                        if (!["type", "id"].contains(attr.name) && !attr.name.startsWith("data-")) {
-                            // check if the attribute is unique
-                            const elements = document.querySelectorAll(`[${attr.name}]`);
-                            if (elements.length == 1) {
-                                // @ts-ignore
-                                stylesheets[i].ownerNode.id = `${attr.name}-stylesheet`;
-                                hasUniqueAttr = true;
-                                break;
-                            }
-                        }
-                    }
-                }
+				// Check for other unique attributes if no data- attributes found
+				let hasUniqueAttr = false;
+				if (attributes) {
+					for (const attr of attributes) {
+						if (!["type", "id"].contains(attr.name) && !attr.name.startsWith("data-")) {
+							// check if the attribute is unique
+							const elements = document.querySelectorAll(`[${attr.name}]`);
+							if (elements.length === 1) {
+								// @ts-ignore
+								stylesheets[i].ownerNode.id = `${attr.name}-stylesheet`;
+								hasUniqueAttr = true;
+								break;
+							}
+						}
+					}
+				}
 
-                if (hasUniqueAttr) continue;
+				if (hasUniqueAttr) continue;
 
 				if (!stylesheets[i].ownerNode?.textContent?.contains("svelte-"))
 					continue;
@@ -489,13 +574,13 @@ export class SettingsPage extends PluginSettingTab {
 		for (let i = 0; i < objects.length; i++) {
 			let key = keys[i];
 			let type = typeof objects[i];
-			if (type == "object" && source[key] != undefined) {
+			if (type === "object" && source[key] !== undefined) {
 				if (Array.isArray(objects[i])) {
 					truth[key] = source[key];
 				} else {
 					SettingsPage.deepAssign(objects[i], source[key]);
 				}
-			} else if (source[key] != undefined) {
+			} else if (source[key] !== undefined) {
 				truth[key] = source[key];
 			}
 		}
@@ -515,7 +600,7 @@ export class SettingsPage extends PluginSettingTab {
 			}
 
 			let type = typeof truth[keys[i]];
-			if (type == "object") {
+			if (type === "object") {
 				SettingsPage.deepRemoveStartingWith(truth[keys[i]], prefix);
 			}
 		}
@@ -527,7 +612,6 @@ export class SettingsPage extends PluginSettingTab {
 		// do a deep object assign so any non exisant values anywhere in the default settings are preserved
 		SettingsPage.deepAssign(Settings, loadedSettings);
 		// Reconstruct feature option instances to preserve constructor-set properties
-		Settings.exportOptions.reconstructFeatureOptions();
 		SettingsPage.saveSettings();
 		SettingsPage.loaded = true;
 	}

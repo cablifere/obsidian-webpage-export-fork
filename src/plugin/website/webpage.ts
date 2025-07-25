@@ -453,7 +453,7 @@ export class Webpage extends Attachment {
 			attachment ??= await this.website.createAttachmentFromSrc(src, this.source);
 
 			if (!sourcePath || !attachment) {
-				ExportLog.log("Attachment source not found: " + src);
+				ExportLog.log(`Attachment source not found: ${src}`);
 				continue;
 			}
 

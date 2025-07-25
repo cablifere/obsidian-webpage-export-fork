@@ -1,17 +1,22 @@
-import { Notice, TFile, TFolder } from "obsidian";
+import { Notice, TFile } from "obsidian";
 import { Path } from "src/plugin/utils/path";
 import { Settings } from "src/plugin/settings/settings";
 import { Utils } from "src/plugin/utils/utils";
 import { Website } from "src/plugin/website/website";
 import { ExportLog, MarkdownRendererAPI } from "src/plugin/render-api/render-api";
-import { Webpage } from "./website/webpage";
 
 export class HTMLExporter {
 
 	public static async export(files: TFile[]) {
-		const exportPath = new Path(Settings.exportOptions.exportRoot);
+		const exportPath = new Path(Settings.exportOptions.exportPath).absoluted();
+		const blacklist = Settings.exportOptions.exportBlacklist.split(",").map(s => s.trim());
 
-		const website = await HTMLExporter.exportFiles(files, exportPath, true);
+		let filesToExport = files;
+		if (blacklist.length > 0) {
+			filesToExport = filesToExport.filter(f => !blacklist.some(b => f.path.includes(b)));
+		}
+
+		const website = await HTMLExporter.exportFiles(filesToExport, exportPath, true);
 
 		if (!website) return;
 		if (Settings.openAfterExport) Utils.openPath(exportPath);
@@ -43,6 +48,7 @@ export class HTMLExporter {
 
 					await path.delete();
 					ExportLog.progress(0.5, "Deleting Old Files", "Deleting: " + path.path, "var(--color-red)");
+					ExportLog.log(`Deleted file: ${path.path}`);
 				};
 
 				await Path.removeEmptyDirectories(destination.path);

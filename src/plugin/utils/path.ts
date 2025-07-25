@@ -580,14 +580,14 @@ export class Path {
 		return newPath;
 	}
 
-	validate(options: {allowEmpty?: boolean, requireExists?: boolean, allowAbsolute?: boolean, allowRelative?: boolean, allowTildeHomeDirectory?: boolean, allowFiles?: boolean, allowDirectories?: boolean, requireExtentions?: string[]}): {valid: boolean, isEmpty: boolean, error: string} {
+	validate(options: {allowEmpty?: boolean, requireExists?: boolean, allowAbsolute?: boolean, allowRelative?: boolean, allowTildeHomeDirectory?: boolean, allowFiles?: boolean, allowDirectories?: boolean, requireExtensions?: string[]}): {valid: boolean, isEmpty: boolean, error: string} {
 		let error = "";
 		let valid = true;
 		const isEmpty = this.sourceString.trim() == "";
 
-		// remove dots from requireExtention
-		options.requireExtentions = options.requireExtentions?.map(e => e.replace(".", "")) ?? [];
-		const dottedExtention = options.requireExtentions.map(e => "." + e);
+		// remove dots from requireExtension
+		options.requireExtensions = options.requireExtensions?.map(e => e.replace(".", "")) ?? [];
+		const dottedExtension = options.requireExtensions.map(e => "." + e);
 
 		const lang = i18n.pathValidations;
 
@@ -616,8 +616,8 @@ export class Path {
 		} else if (!options.allowDirectories && this.isDirectoryFS) {
 			error += lang.noFolders;
 			valid = false;
-		} else if (options.requireExtentions.length > 0 && !options.requireExtentions.includes(this.extensionName) && !isEmpty) {
-			error += lang.mustHaveExtension.format(dottedExtention.join(", "));
+		} else if (options.requireExtensions.length > 0 && !options.requireExtensions.includes(this.extensionName) && !isEmpty) {
+			error += lang.mustHaveExtension.format(dottedExtension.join(", "));
 			valid = false;
 		}
 
@@ -671,16 +671,16 @@ export class Path {
 		if (this.isDirectory) return false;
 
 		try {
-			ExportLog.log("Writing file: " + this.absoluted().pathname);
+			ExportLog.log(`Writing file: ${this.absoluted().pathname}`);
 			await fs.writeFile(this.absoluted().pathname, data, { encoding: encoding });
 			return true;
 		} catch (error) {
-			ExportLog.log("Creating directory: " + this.absoluted().directory.path);
+			ExportLog.log(`Creating directory: ${this.absoluted().directory.path}`);
 			const dirExists = await this.createDirectory();
 			if (!dirExists) return false;
 
 			try {
-				ExportLog.log("Writing file: " + this.absoluted().pathname);
+				ExportLog.log(`Writing file: ${this.absoluted().pathname}`);
 				await fs.writeFile(this.absoluted().pathname, data, { encoding: encoding });
 				return true;
 			} catch (error) {
@@ -882,6 +882,7 @@ export class Path {
 
 			if (fileNames.length === 0)  {
 				await rmdir(directory);
+				ExportLog.log(`Deleted directory: ${directory}`);
 			}
 		}
 		catch (error) {

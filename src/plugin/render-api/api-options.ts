@@ -2,8 +2,7 @@
 /**
  * General options for the MarkdownRendererAPI
  */
-export class MarkdownRendererOptions
-{
+export class MarkdownRendererOptions {
 	/**
 	 * The container to render the HTML into.
 	 */
@@ -35,7 +34,7 @@ export class MarkdownRendererOptions
 	exportPath: string = "";
 
 	/**
-	 * Should the usage of the fallback rendering method which iterates all document sections be forced?
+	 * Comma separated list of files and folders to exclude from the export
 	 */
-	useFallbackRenderer: boolean = false;
+	exportBlacklist: string = "";
 }

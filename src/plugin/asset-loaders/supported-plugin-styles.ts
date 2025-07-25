@@ -23,7 +23,7 @@ export class SupportedPluginStyles extends AssetLoader {
 				(
 				pluginIds.ids.contains(styleID) || Settings.exportOptions.includeStyleCssIds.contains(styleID)
 			) {
-				ExportLog.log("Including stylesheet: " + styleID);
+				ExportLog.log(`Including stylesheet: ${styleID}`);
 				const style = stylesheets[i].cssRules;
 
 				for (const item in style) {

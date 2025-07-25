@@ -1,5 +1,3 @@
-import { CustomHeadOptions } from "./features/custom-head";
-
 export enum EmojiStyle {
 	Native = "Native",
 	Twemoji = "Twemoji",
@@ -45,18 +43,12 @@ export interface WebpageData extends FileData {
 
 export class WebsiteOptions {
 	/**
-	 * Custom head content options
-	 */
-	customHead: CustomHeadOptions;
-
-	/**
 	 * Document section options
 	 */
 	documentWidth: string;
 
 	public static fromJSON(json: string): WebsiteOptions {
 		const data = Object.assign(new WebsiteOptions(), JSON.parse(json));
-		data.customHead = Object.assign(new CustomHeadOptions(), data.customHead);
 		return data;
 	}
 }
@@ -74,17 +66,15 @@ export class WebsiteData {
 	createdTime: number = 0;
 	modifiedTime: number = 0;
 	pluginVersion: string = "";
-	exportRoot: string = "";
 	baseURL: string = "";
 
 	themeName: string = "";
 	bodyClasses: string = "";
 	hasFavicon: boolean = false;
-	featureOptions: WebsiteOptions = new WebsiteOptions();
+	documentWidth: string = "45em";
 
 	public static fromJSON(json: string): WebsiteData {
 		const data = Object.assign(new WebsiteData(), JSON.parse(json));
-		data.featureOptions = WebsiteOptions.fromJSON(JSON.stringify(data.featureOptions));
 		return data;
 	}
 }

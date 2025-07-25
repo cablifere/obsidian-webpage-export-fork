@@ -1,5 +1,4 @@
 import { EmojiStyle } from "src/shared/website-data";
-import { CustomHeadOptions } from "src/shared/features/custom-head";
 import { MarkdownRendererOptions } from "src/plugin/render-api/api-options";
 
 export class ExportPipelineOptions extends MarkdownRendererOptions {
@@ -23,9 +22,9 @@ export class ExportPipelineOptions extends MarkdownRendererOptions {
 	// Options for the features
 
 	/**
-	 * Custom head content options
+	 * Custom head source path
 	 */
-	customHeadOptions: CustomHeadOptions = new CustomHeadOptions();
+	customHeadSourcePath: string = "";
 
 	/**
 	 * Document section options
@@ -114,7 +113,7 @@ export class ExportPipelineOptions extends MarkdownRendererOptions {
 	/**
 	 * The relative path in the vault that will be considered the root of the export. Anything outside of this path will either be moved or not included.
 	 */
-	exportRoot: string = '';
+	exportPath: string = '';
 
 	/**
 	 * Include CSS from the plugins with these ids.
@@ -130,31 +129,4 @@ export class ExportPipelineOptions extends MarkdownRendererOptions {
 	 * Auto dispose webpage documents and elements after each one is rendered.
 	 */
 	autoDisposeWebpages: boolean = true;
-
-	/**
-	 * Reconstructs feature option instances to ensure constructor-set properties are preserved
-	 * after loading from JSON. This is necessary because deepAssign overwrites instance properties.
-	 */
-	reconstructFeatureOptions(): void {
-		// Iterate through all properties of this instance
-		for (const [propertyName, propertyValue] of Object.entries(this)) {
-			// Check if this property is a feature options instance (has featureId)
-			if (propertyValue &&
-				typeof propertyValue === 'object' &&
-				'featureId' in propertyValue &&
-				propertyValue.constructor !== Object) {
-
-				// Get the original constructor function
-				const ConstructorClass = propertyValue.constructor as new() => any;
-
-				// Create a fresh instance with constructor-set defaults
-				const freshInstance = new ConstructorClass();
-
-				// Apply the loaded JSON data on top of the constructor defaults
-				(this as any)[propertyName] = Object.assign(freshInstance, propertyValue);
-			}
-		}
-	}
 }
-
-
