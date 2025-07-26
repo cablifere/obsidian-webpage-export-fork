@@ -1,99 +1,60 @@
 import { Settings, SettingsPage } from "src/plugin/settings/settings";
 import { Path } from "./path";
 /* @ts-ignore */
-const dialog: Electron.Dialog = require('electron').remote.dialog;
+const dialog: Electron.Dialog = require("electron").remote.dialog;
 
-export namespace FileDialogs
-{
-	export async function showSaveDialog(defaultPath: Path, defaultFileName: string, showAllFilesOption: boolean = true): Promise<Path | undefined>
-	{
-		defaultPath.makePlatformSafe();
+export namespace FileDialogs {
+  export async function showSelectFolderDialog(defaultPath: Path): Promise<Path | undefined> {
+    if (!defaultPath.exists) {
+      defaultPath = Path.vaultPath;
+    }
+    defaultPath.makePlatformSafe();
 
-		// get paths
-		const absoluteDefaultPath = defaultPath.directory.absoluted().joinString(defaultFileName);
-		
-		// add filters
-		const filters = [{
-			name: this.trimStart(absoluteDefaultPath.extension, ".").toUpperCase() + " Files",
-			extensions: [this.trimStart(absoluteDefaultPath.extension, ".")]
-		}];
+    // show picker
+    const picker = await dialog.showOpenDialog({
+      defaultPath: defaultPath.directory.path,
+      properties: ["openDirectory"]
+    });
 
-		if (showAllFilesOption)
-		{
-			filters.push({
-				name: "All Files",
-				extensions: ["*"]
-			});
-		}
+    if (picker.canceled) {
+      return;
+    }
 
-		// show picker
-		const picker = await dialog.showSaveDialog({
-			defaultPath: absoluteDefaultPath.path,
-			filters: filters,
-			properties: ["showOverwriteConfirmation"]
-		})
+    const path = new Path(picker.filePaths[0]).makePlatformSafe();
+    Settings.exportOptions.exportPath = path.directory.path;
+    SettingsPage.saveSettings();
 
-		if (picker.canceled || !picker.filePath) return;
-		
-		const pickedPath = new Path(picker.filePath).makePlatformSafe();
-		Settings.exportOptions.exportPath = pickedPath.path;
-		SettingsPage.saveSettings();
-		
-		return pickedPath;
-	}
+    return path;
+  }
 
-	export async function showSelectFolderDialog(defaultPath: Path): Promise<Path | undefined>
-	{
-		if(!defaultPath.exists) defaultPath = Path.vaultPath;
-		defaultPath.makePlatformSafe();
+  export async function showSelectFileDialog(defaultPath: Path): Promise<Path | undefined> {
+    if (!defaultPath.exists) {
+      defaultPath = this.idealAbsoluteDefaultPath();
+    }
+    defaultPath.makePlatformSafe();
 
-		// show picker
-		const picker = await dialog.showOpenDialog({
-			defaultPath: defaultPath.directory.path,
-			properties: ["openDirectory"]
-		});
+    // show picker
+    const picker = await dialog.showOpenDialog({
+      defaultPath: defaultPath.directory.path,
+      properties: ["openFile"]
+    });
 
-		if (picker.canceled) return;
+    if (picker.canceled) {
+      return;
+    }
 
-		const path = new Path(picker.filePaths[0]).makePlatformSafe();
-		Settings.exportOptions.exportPath = path.directory.path;
-		SettingsPage.saveSettings();
+    const path = new Path(picker.filePaths[0]).makePlatformSafe();
+    return path;
+  }
 
-		return path;
-	}
+  export function idealAbsoluteDefaultPath() : Path {
+    let lastPath = new Path(Settings.exportOptions.exportPath);
 
-	export async function showSelectFileDialog(defaultPath: Path): Promise<Path | undefined>
-	{
-		if(!defaultPath.exists) defaultPath = Path.vaultPath;
-		defaultPath.makePlatformSafe();
-
-		// show picker
-		const picker = await dialog.showOpenDialog({
-			defaultPath: defaultPath.directory.path,
-			properties: ["openFile"]
-		});
-
-		if (picker.canceled) return;
-
-		const path = new Path(picker.filePaths[0]).makePlatformSafe();
-		return path;
-	}
-
-	export function idealDefaultPath() : Path
-	{
-		let lastPath = new Path(Settings.exportOptions.exportPath);
-
-		if (lastPath.path != "" && lastPath.exists)
-		{
-			lastPath = lastPath.directory;
-		}
-		else 
-		{
-			lastPath = Path.vaultPath;
-		}
-
-		lastPath.makePlatformSafe();
-
-		return lastPath;
-	}
+    if (lastPath.path != "" && lastPath.exists) {
+      lastPath = lastPath.directory;
+    } else {
+      lastPath = Path.vaultPath;
+    }
+    return lastPath.makePlatformSafe().absoluted();
+  }
 }
