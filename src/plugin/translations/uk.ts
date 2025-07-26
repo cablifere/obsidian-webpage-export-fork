@@ -1,152 +1,156 @@
 import { i18n } from "./language";
 
 export const language: i18n = {
-	cancel: "Скасувати",
-	browse: "Огляд",
-	pathInputPlaceholder: "Введіть або оберіть шлях...",
-	pathValidations:
-	{
-		noEmpty: "Шлях не може бути порожнім",
-		mustExist: "Шлях не існує",
-		noTilde: "Домашній каталог з тильдою (~) не дозволяється",
-		noAbsolute: "Шлях не може бути абсолютним",
-		noRelative: "Шлях не може бути відносним",
-		noFiles: "Шлях не може бути файлом",
-		noFolders: "Шлях не може бути каталогом",
-		mustHaveExtension: "Шлях повинен мати розширення: {0}",
-	},
-	updateAvailable: "Доступне оновлення",
-	exportAsHTML: "Експортувати як HTML",
-	settings: {
-		title: "Налаштування експорту HTML",
-		support: "Підтримайте подальшу розробку цього плагіна.",
-		debug: "Копіювати відлагоджувальну інформацію в буфер обміну",
-		baseFeatures:
-		{
-			info_selector: "CSS-селектор для елемента. Функція буде розміщена відносно цього елемента.",
-			info_type: "Ця функція буде розміщена перед, після чи всередині (на початку або в кінці) елемента.",
-			info_displayTitle: "Описовий заголовок для відображення над функцією",
-			info_featurePlacement: "Де розмістити цю функцію на сторінці (відносно селектора).",
-		},
-		documentWidth: {
-			title: "Документ",
-			description: "Ширина документа"
-		},
-		customHeadSourcePath: {
-			title: "",
-			description: ""
-		},
-		styleOptionsSection: {
-			title: "Параметри стилю",
-			description: "Налаштувати, які стилі включені в експорт"
-		},
-		makeOfflineCompatible: {
-			title: "Зробити сумісним офлайн",
-			description: "Завантажити будь-які онлайн-ресурси / зображення / скрипти, щоб сторінку можна було переглядати офлайн. Або щоб веб-сайт не залежав від CDN."
-		},
-		addHeadTag: {
-			title: "",
-			description: "",
-		},
-		addBodyClasses: {
-			title: "",
-			description: "",
-		},
-		addMathjaxStyles: {
-			title: "",
-			description: "",
-		},
-		flattenExportPaths: {
-			title: "",
-			description: ""
-		},
-		includeJs: {
-			title: "",
-			description: ""
-		},
-		includeCss: {
-			title: "",
-			description: ""
-		},
-		inlineMedia: {
-			title: "",
-			description: ""
-		},
-		inlineJs: {
-			title: "",
-			description: ""
-		},
-		inlineCss: {
-			title: "",
-			description: ""
-		},
-		inlineFonts: {
-			title: "",
-			description: ""
-		},
-		inlineOther: {
-			title: "",
-			description: ""
-		},
-		includePluginCSS: {
-			title: "Включити CSS з плагінів",
-			description: "Включити CSS з наступних плагінів в експортований HTML. Якщо функції плагінів не відображаються коректно, спробуйте додати плагін до цього списку. Уникайте додавання плагінів, якщо ви не помітили конкретної проблеми, оскільки більше CSS збільшить час завантаження вашої сторінки."
-		},
-		includeStyleCssIds: {
-			title: "Включити стилі з ID",
-			description: "Включити CSS з тегів стилю з такими ID в експортований HTML"
-		},
-		generalSettingsSection: {
-			title: "Загальні налаштування",
-			description: "Керування простими налаштуваннями, такими як favicon та метадані сайту",
-		},
-		favicon: {
-			title: "Зображення Favicon",
-			description: "Локальний шлях до favicon для сайту",
-		},
-		siteName: {
-			title: "Назва сайту",
-			description: "Назва сховища / експортованого сайту",
-		},
-		iconEmojiStyle: {
-			title: "Стиль іконок-емодзі",
-			description: "Стиль емодзі для використання у користувацьких іконках",
-		},
-		themeName: {
-			title: "Тема",
-			description: "Встановлена тема для використання при експорті",
-		},
-		relativeHeaderLinks: {
-			title: "Використовувати відносні посилання заголовків",
-			description: "Використовувати відносні посилання для заголовків замість абсолютних",
-		},
-		slugifyPaths: {
-			title: "Slugify шляхи",
-			description: "Зробити всі шляхи та імена файлів у веб-стилі (нижній регістр, без пробілів)",
-		},
-		addPageIcon: {
-			title: "Додати іконку сторінки",
-			description: "Додати іконку файлу до заголовка сторінки",
-		},
-		unifyTitleFormat: {
-			title: "",
-			description: "",
-		},
-		logLevel: {
-			title: "Рівень журналювання",
-			description: "Встановити рівень журналювання для відображення в консолі",
-		},
-		titleProperty: {
-			title: "Властивість заголовка",
-			description: "Властивість для використання як заголовок документа",
-		},
-		exportPath: {
-			title: "",
-			description: "",
-		},
-		exportBlacklist: {
-			title: "",
-			description: "",
-		}
-	}
-}
+  cancel: "Скасувати",
+  browse: "Огляд",
+  pathInputPlaceholder: "Введіть або оберіть шлях...",
+  pathValidations:
+  {
+    noEmpty: "Шлях не може бути порожнім",
+    mustExist: "Шлях не існує",
+    noTilde: "Домашній каталог з тильдою (~) не дозволяється",
+    noAbsolute: "Шлях не може бути абсолютним",
+    noRelative: "Шлях не може бути відносним",
+    noFiles: "Шлях не може бути файлом",
+    noFolders: "Шлях не може бути каталогом",
+    mustHaveExtension: "Шлях повинен мати розширення: {0}",
+  },
+  updateAvailable: "Доступне оновлення",
+  exportAsHTML: "Експортувати як HTML",
+  settings: {
+    title: "Налаштування експорту HTML",
+    support: "Підтримайте подальшу розробку цього плагіна.",
+    debug: "Копіювати відлагоджувальну інформацію в буфер обміну",
+    baseFeatures:
+    {
+      info_selector: "CSS-селектор для елемента. Функція буде розміщена відносно цього елемента.",
+      info_type: "Ця функція буде розміщена перед, після чи всередині (на початку або в кінці) елемента.",
+      info_displayTitle: "Описовий заголовок для відображення над функцією",
+      info_featurePlacement: "Де розмістити цю функцію на сторінці (відносно селектора).",
+    },
+    documentWidth: {
+      title: "Документ",
+      description: "Ширина документа",
+    },
+    customHeadSourcePath: {
+      title: "",
+      description: "",
+    },
+    styleOptionsSection: {
+      title: "Параметри стилю",
+      description: "Налаштувати, які стилі включені в експорт",
+    },
+    makeOfflineCompatible: {
+      title: "Зробити сумісним офлайн",
+      description: "Завантажити будь-які онлайн-ресурси / зображення / скрипти, щоб сторінку можна було переглядати офлайн. Або щоб веб-сайт не залежав від CDN.",
+    },
+    addHeadTag: {
+      title: "",
+      description: "",
+    },
+    addBodyClasses: {
+      title: "",
+      description: "",
+    },
+    addMathjaxStyles: {
+      title: "",
+      description: "",
+    },
+    flattenExportPaths: {
+      title: "",
+      description: "",
+    },
+    includeJs: {
+      title: "",
+      description: "",
+    },
+    includeCss: {
+      title: "",
+      description: "",
+    },
+    inlineMedia: {
+      title: "",
+      description: "",
+    },
+    inlineJs: {
+      title: "",
+      description: "",
+    },
+    inlineCss: {
+      title: "",
+      description: "",
+    },
+    inlineFonts: {
+      title: "",
+      description: "",
+    },
+    inlineOther: {
+      title: "",
+      description: "",
+    },
+    includePluginCSS: {
+      title: "Включити CSS з плагінів",
+      description: "Включити CSS з наступних плагінів в експортований HTML. Якщо функції плагінів не відображаються коректно, спробуйте додати плагін до цього списку. Уникайте додавання плагінів, якщо ви не помітили конкретної проблеми, оскільки більше CSS збільшить час завантаження вашої сторінки.",
+    },
+    includeStyleCssIds: {
+      title: "Включити стилі з ID",
+      description: "Включити CSS з тегів стилю з такими ID в експортований HTML",
+    },
+    generalSettingsSection: {
+      title: "Загальні налаштування",
+      description: "Керування простими налаштуваннями, такими як favicon та метадані сайту",
+    },
+    favicon: {
+      title: "Зображення Favicon",
+      description: "Локальний шлях до favicon для сайту",
+    },
+    siteName: {
+      title: "Назва сайту",
+      description: "Назва сховища / експортованого сайту",
+    },
+    iconEmojiStyle: {
+      title: "Стиль іконок-емодзі",
+      description: "Стиль емодзі для використання у користувацьких іконках",
+    },
+    themeName: {
+      title: "Тема",
+      description: "Встановлена тема для використання при експорті",
+    },
+    relativeHeaderLinks: {
+      title: "Використовувати відносні посилання заголовків",
+      description: "Використовувати відносні посилання для заголовків замість абсолютних",
+    },
+    slugifyPaths: {
+      title: "Slugify шляхи",
+      description: "Зробити всі шляхи та імена файлів у веб-стилі (нижній регістр, без пробілів)",
+    },
+    addPageIcon: {
+      title: "Додати іконку сторінки",
+      description: "Додати іконку файлу до заголовка сторінки",
+    },
+    unifyTitleFormat: {
+      title: "",
+      description: "",
+    },
+    logLevel: {
+      title: "Рівень журналювання",
+      description: "Встановити рівень журналювання для відображення в консолі",
+    },
+    titleProperty: {
+      title: "Властивість заголовка",
+      description: "Властивість для використання як заголовок документа",
+    },
+    exportPath: {
+      title: "",
+      description: "",
+    },
+    exportBlacklist: {
+      title: "",
+      description: "",
+    },
+    openAfterExport: {
+      title: "",
+      description: "",
+    },
+  },
+};
