@@ -13,7 +13,7 @@ export namespace FileDialogs {
     // show picker
     const picker = await dialog.showOpenDialog({
       defaultPath: defaultPath.directory.path,
-      properties: ["openDirectory"]
+      properties: ["openDirectory"],
     });
 
     if (picker.canceled) {
@@ -36,7 +36,7 @@ export namespace FileDialogs {
     // show picker
     const picker = await dialog.showOpenDialog({
       defaultPath: defaultPath.directory.path,
-      properties: ["openFile"]
+      properties: ["openFile"],
     });
 
     if (picker.canceled) {
@@ -47,7 +47,7 @@ export namespace FileDialogs {
     return path;
   }
 
-  export function idealAbsoluteDefaultPath() : Path {
+  export function idealAbsoluteDefaultPath(): Path {
     let lastPath = new Path(Settings.exportOptions.exportPath);
 
     if (lastPath.path != "" && lastPath.exists) {

@@ -1,8 +1,9 @@
 import ObsidianApp from "src/shared/app";
-import { AssetLoader } from "./base-asset.js";
-import { AssetType, InlinePolicy, Mutability } from "./asset-types.js";
 import { Path } from "src/plugin/utils/path";
 import defaultIcon from "src/assets/icon.png";
+
+import { AssetLoader } from "./base-asset";
+import { AssetType, InlinePolicy, Mutability } from "./asset-types";
 
 export class Favicon extends AssetLoader {
   constructor() {
@@ -10,23 +11,26 @@ export class Favicon extends AssetLoader {
   }
 
   override async load() {
-    if (this.exportOptions.faviconPath == "") this.data = Buffer.from(defaultIcon);
+    if (this.exportOptions.faviconPath == "") {
+      this.data = Buffer.from(defaultIcon);
+    }
 
     const iconPath = new Path(this.exportOptions.faviconPath);
-		if (iconPath.isEmpty)
-			return;
+    if (iconPath.isEmpty) {
+      return;
+    }
 
-		const icon = await iconPath.readAsBuffer();
+    const icon = await iconPath.readAsBuffer();
     if (icon) {
       this.data = icon;
       this.targetPath.fullName = "favicon" + iconPath.extension;
-			this.source = ObsidianApp.app.vault.getFileByPath(iconPath.path);
-			if (!this.source) {
+      this.source = ObsidianApp.app.vault.getFileByPath(iconPath.path);
+      if (!this.source) {
         const stat = iconPath.stat;
         if (stat) {
-					this.sourceStat = {ctime: stat.ctimeMs, mtime: stat.mtimeMs, size: stat.size};
+          this.sourceStat = { ctime: stat.ctimeMs, mtime: stat.mtimeMs, size: stat.size };
         }
-			}
+      }
     }
     await super.load();
   }

@@ -13,12 +13,11 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@eslint/js": "^9.31.0",
+		"@stylistic/eslint-plugin": "^5.2.2",
 		"@types/md5": "^2.3.5",
 		"@types/mime": "^3.0.4",
 		"@types/node": "^24.1.0",
 		"@types/postcss-safe-parser": "^5.0.4",
-		"@typescript-eslint/eslint-plugin": "^8.38.0",
-		"@typescript-eslint/parser": "^8.38.0",
 		"builtin-modules": "^5.0.0",
 		"electron": "^37.2.4",
 		"esbuild": "^0.25.8",

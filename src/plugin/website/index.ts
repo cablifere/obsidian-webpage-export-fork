@@ -1,8 +1,8 @@
-import { Attachment } from "src/plugin/utils/downloadable";
-import { Website } from "./website";
-import { Webpage } from "./webpage";
 import { TFile } from "obsidian";
-import { ExportPipelineOptions } from "src/plugin/website/pipeline-options.js";
+
+import ObsidianApp from "src/shared/app";
+import { Attachment } from "src/plugin/utils/downloadable";
+import { ExportPipelineOptions } from "src/plugin/website/pipeline-options";
 import { AssetHandler } from "src/plugin/asset-loaders/asset-handler";
 import { ExportLog } from "src/plugin/render-api/render-api";
 import { Path } from "src/plugin/utils/path";
@@ -11,7 +11,9 @@ import { AssetType } from "src/plugin/asset-loaders/asset-types";
 import { AssetLoader } from "src/plugin/asset-loaders/base-asset";
 import { FileData, WebpageData, WebsiteData } from "src/shared/website-data";
 import { Shared } from "src/shared/shared";
-import ObsidianApp from "src/shared/app";
+
+import { Website } from "./website";
+import { Webpage } from "./webpage";
 import { WebpageTemplate } from "./webpage-template";
 
 export class Index {
@@ -50,11 +52,21 @@ export class Index {
       }
 
       // default values
-      if (!this.websiteData.attachments) this.websiteData.attachments = [];
-      if (!this.websiteData.allFiles) this.websiteData.allFiles = [];
-      if (!this.websiteData.webpages) this.websiteData.webpages = {};
-      if (!this.websiteData.fileInfo) this.websiteData.fileInfo = {};
-      if (!this.websiteData.sourceToTarget) this.websiteData.sourceToTarget = {};
+      if (!this.websiteData.attachments) {
+        this.websiteData.attachments = [];
+      }
+      if (!this.websiteData.allFiles) {
+        this.websiteData.allFiles = [];
+      }
+      if (!this.websiteData.webpages) {
+        this.websiteData.webpages = {};
+      }
+      if (!this.websiteData.fileInfo) {
+        this.websiteData.fileInfo = {};
+      }
+      if (!this.websiteData.sourceToTarget) {
+        this.websiteData.sourceToTarget = {};
+      }
       this.websiteData.documentWidth = options.documentWidth;
 
       // set global values
@@ -72,7 +84,7 @@ export class Index {
   }
 
   public async finalize() {
-    this.websiteData.allFiles = this.allFiles.map((file) => file.targetPath.path);
+    this.websiteData.allFiles = this.allFiles.map(file => file.targetPath.path);
 
     // remove deleted files from website data
     for (const file of this.deletedFiles) {
@@ -90,8 +102,8 @@ export class Index {
   }
 
   /**
-	 * Simply deletes metadata.json and search-index.json
-	 */
+   * Simply deletes metadata.json and search-index.json
+   */
   public async clearCache() {
     const metadataPath = this.website.destination.join(AssetHandler.libraryPath).joinString(Shared.metadataFileName);
     await metadataPath.delete();
@@ -127,7 +139,7 @@ export class Index {
 
     if (file instanceof Webpage) {
       await this.updateWebpage(file);
-    } else if (isAsset && (!isExisting || isExisting && file.sourceStat.size !== this.getOldFile(key)?.sourceSize)) {
+    } else if (isAsset && (!isExisting || (isExisting && file.sourceStat.size !== this.getOldFile(key)?.sourceSize))) {
       this.updateAsset(file);
     } else if (isUpdated) {
       this.updateAttachment(file);
@@ -206,7 +218,7 @@ export class Index {
       webpageInfo.coverImageURL = "";
       webpageInfo.fullURL = webpage.outputData.fullURL;
       webpageInfo.pathToRoot = webpage.outputData.pathToRoot == "" ? "." : webpage.outputData.pathToRoot;
-      webpageInfo.attachments = webpage.attachments.map((download) => download.targetPath.path);
+      webpageInfo.attachments = webpage.attachments.map(download => download.targetPath.path);
 
       webpageInfo.createdTime = webpage.source.stat.ctime;
       webpageInfo.modifiedTime = webpage.source.stat.mtime;
@@ -257,7 +269,9 @@ export class Index {
       delete fileInfo.data;
 
       this.websiteData.fileInfo[key] = fileInfo;
-      if (!this.websiteData.attachments.includes(key)) this.websiteData.attachments.push(key);
+      if (!this.websiteData.attachments.includes(key)) {
+        this.websiteData.attachments.push(key);
+      }
       this.websiteData.sourceToTarget[fileInfo.sourcePath] = fileInfo.exportPath;
     }
 

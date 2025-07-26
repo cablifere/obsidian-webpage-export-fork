@@ -1,15 +1,17 @@
 import { Notice, Plugin, PluginSettingTab, Setting, getIcon } from "obsidian";
+import safeParser from "postcss-safe-parser";
+
+import ObsidianApp from "src/shared/app";
 import { Path } from "src/plugin/utils/path";
-import pluginStylesBlacklist from "src/assets/third-party-styles-blacklist.txt";
 import { ExportLog } from "src/plugin/render-api/render-api";
-import { createDivider, createDropdown, createFileInput, createText, createToggle } from "./settings-components";
-import { ExportPipelineOptions } from "src/plugin/website/pipeline-options.js";
+import { ExportPipelineOptions } from "src/plugin/website/pipeline-options";
 import { FlowList } from "src/plugin/features/flow-list";
-import { i18n } from "../translations/language";
+import { i18n } from "src/plugin/translations/language";
 import { EmojiStyle } from "src/shared/website-data";
 import supportedStyleIds from "src/assets/plugin-style-ids.json";
-import safeParser from "postcss-safe-parser";
-import ObsidianApp from "src/shared/app";
+import pluginStylesBlacklist from "src/assets/third-party-styles-blacklist.txt";
+
+import { createDivider, createDropdown, createFileInput, createText, createToggle } from "./settings-components";
 
 // #region Settings Definition
 

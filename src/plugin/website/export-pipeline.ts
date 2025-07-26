@@ -5,17 +5,17 @@ import { ExportPipelineOptions } from "./pipeline-options";
 import ObsidianApp from "src/shared/app";
 
 export class WebsiteExportPipeline {
-	public files: TFile[];
-	public assets: AssetLoader[] = [];
-	public attachments: Attachment[] = [];
-	public options: ExportPipelineOptions = new ExportPipelineOptions();
+  public files: TFile[];
+  public assets: AssetLoader[] = [];
+  public attachments: Attachment[] = [];
+  public options: ExportPipelineOptions = new ExportPipelineOptions();
 
-	public static createDefault(options: ExportPipelineOptions): WebsiteExportPipeline {
-		const pipeline = new WebsiteExportPipeline();
-		pipeline.options = options;
-		pipeline.files = ObsidianApp.app.vault.getFiles();
-		pipeline.attachments = [];
+  public static createDefault(options: ExportPipelineOptions): WebsiteExportPipeline {
+    const pipeline = new WebsiteExportPipeline();
+    pipeline.options = options;
+    pipeline.files = ObsidianApp.app.vault.getFiles();
+    pipeline.attachments = [];
 
-		return pipeline;
-	}
+    return pipeline;
+  }
 }

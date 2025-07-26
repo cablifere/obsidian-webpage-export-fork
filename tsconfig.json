@@ -25,4 +25,8 @@
 		"**/*.ts",
 		"src/assets/**/*.json"
 	],
+	"exclude": [
+		"dist/**",
+		"main.js",
+	]
 }

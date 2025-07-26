@@ -1,5 +1,5 @@
-import { AssetLoader } from "./base-asset.js";
-import { AssetType, InlinePolicy, LoadMethod, Mutability } from "./asset-types.js";
+import { AssetLoader } from "./base-asset";
+import { AssetType, InlinePolicy, LoadMethod, Mutability } from "./asset-types";
 
 export class GlobalVariableStyles extends AssetLoader {
   constructor() {
@@ -9,7 +9,9 @@ export class GlobalVariableStyles extends AssetLoader {
   override async load() {
     const bodyStyle = (document.body.getAttribute("style") ?? "").replaceAll("\"", "'").replaceAll("; ", " !important;\n\t");
     let lineWidth = this.exportOptions.documentWidth;
-    if (!isNaN(Number(lineWidth))) lineWidth += "px";
+    if (!isNaN(Number(lineWidth))) {
+      lineWidth += "px";
+    }
     const lineWidthCss = `min(${lineWidth}, calc(100vw - 2em))`;
     this.data = `
       :root body {

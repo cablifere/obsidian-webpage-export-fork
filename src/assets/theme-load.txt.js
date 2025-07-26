@@ -1,11 +1,8 @@
 let theme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-if (theme == "dark")
-{
+if (theme == "dark") {
 	document.body.classList.add("theme-dark");
 	document.body.classList.remove("theme-light");
-}
-else
-{
+} else {
 	document.body.classList.add("theme-light");
 	document.body.classList.remove("theme-dark");
 }
