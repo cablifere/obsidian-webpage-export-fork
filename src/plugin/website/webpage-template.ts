@@ -1,9 +1,10 @@
 import { InsertedFeatureOptions } from "src/shared/features/feature-options-base";
 import { ExportLog } from "src/plugin/render-api/render-api";
+import { AssetHandler } from "src/plugin/asset-loaders/asset-handler";
+import { AssetType } from "src/plugin/asset-loaders/asset-types";
+import { Utils } from "src/plugin/utils/utils";
+
 import { ExportPipelineOptions } from "./pipeline-options";
-import { AssetHandler } from "../asset-loaders/asset-handler";
-import { AssetType } from "../asset-loaders/asset-types";
-import { Utils } from "../utils/utils";
 
 export class WebpageTemplate {
   private doc: Document;

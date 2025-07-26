@@ -150,5 +150,15 @@ export const language: i18n = {
       title: "",
       description: "",
     },
+    exportVault: {
+      title: "",
+      description: "",
+      button: "",
+      buttonWorking: "",
+    },
+    copyDebug: {
+      title: "",
+      description: "",
+    },
   },
 };

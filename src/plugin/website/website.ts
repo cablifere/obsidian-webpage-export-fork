@@ -208,9 +208,9 @@ export class Website {
   private validateSettings() {
     // if iconize plugin is installed, warn if note icons are not enabled
     // @ts-ignore
-    if (ObsidianApp.app.plugins?.enabledPlugins?.has("obsidian-icon-folder")) {
+    if (app.plugins?.enabledPlugins?.has("obsidian-icon-folder")) {
       // @ts-ignore
-      const fileToIconName = ObsidianApp.app.plugins?.plugins?.["obsidian-icon-folder"]?.data;
+      const fileToIconName = app.plugins?.plugins?.["obsidian-icon-folder"]?.data;
       const noteIconsEnabled = fileToIconName?.settings?.iconsInNotesEnabled ?? false;
       if (!noteIconsEnabled) {
         ExportLog.warning("For Iconize plugin support, enable \"Toggle icons while editing notes\" in the Iconize plugin settings.");
@@ -219,9 +219,9 @@ export class Website {
 
     // if excalidraw installed and the embed mode is not set to Native SVG, warn
     // @ts-ignore
-    if (ObsidianApp.app.plugins?.enabledPlugins?.has("obsidian-excalidraw-plugin")) {
+    if (app.plugins?.enabledPlugins?.has("obsidian-excalidraw-plugin")) {
       // @ts-ignore
-      const embedMode = ObsidianApp.app.plugins?.plugins?.["obsidian-excalidraw-plugin"]?.settings?.["previewImageType"] ?? "";
+      const embedMode = app.plugins?.plugins?.["obsidian-excalidraw-plugin"]?.settings?.["previewImageType"] ?? "";
       if (embedMode != "SVG") {
         ExportLog.warning("For Excalidraw embed support, set the embed mode to \"Native SVG\" in the Excalidraw plugin settings.");
       }
@@ -229,9 +229,9 @@ export class Website {
 
     // the plugin only supports the banner plugin above version 2.0.5
     // @ts-ignore
-    if (ObsidianApp.app.plugins?.enabledPlugins?.has("obsidian-banners")) {
+    if (app.plugins?.enabledPlugins?.has("obsidian-banners")) {
       // @ts-ignore
-      const bannerPlugin = ObsidianApp.app.plugins?.plugins?.["obsidian-banners"];
+      const bannerPlugin = app.plugins?.plugins?.["obsidian-banners"];
       let version = bannerPlugin?.manifest?.version ?? "0.0.0";
       version = version?.substring(0, 5);
       if (version < "2.0.5") {
@@ -297,13 +297,12 @@ export class Website {
   }
 
   public getFilePathFromSrc(src: string, exportingFilePath: string): Path {
-    // @ts-ignore
     let pathString = "";
     if (src.startsWith("app://")) {
       let fail = false;
       try {
         // @ts-ignore
-        pathString = ObsidianApp.app.vault.resolveFileUrl(src)?.path ?? "";
+        pathString = app.vault.resolveFileUrl(src)?.path ?? "";
         if (pathString == "") {
           fail = true;
         }

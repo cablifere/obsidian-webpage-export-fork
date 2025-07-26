@@ -17,7 +17,7 @@ export const language: i18n = {
   updateAvailable: "Update Available",
   exportAsHTML: "Export as HTML",
   settings: {
-    title: "HTML Export Settings",
+    title: "Basic HTML Export Settings",
     support: "Support the continued development of this plugin.",
     debug: "Copy debug info to clipboard",
     baseFeatures: {
@@ -139,7 +139,7 @@ export const language: i18n = {
       description: "The property to use as the title of the document",
     },
     exportPath: {
-      title: "Export path",
+      title: "Exported files location",
       description: "The path to export the site to. If left empty, the export will be saved to the same directory as the vault",
     },
     exportBlacklist: {
@@ -149,6 +149,16 @@ export const language: i18n = {
     openAfterExport: {
       title: "Open after export",
       description: "Open the output folder after export",
+    },
+    exportVault: {
+      title: "Export vault",
+      description: "Export your vault using the current settings",
+      button: "Export",
+      buttonWorking: "Exporting...",
+    },
+    copyDebug: {
+      title: "Copy debug info",
+      description: "Copy plugin debug information to your clipboard",
     },
   },
 };

@@ -1,14 +1,16 @@
-import { MarkdownRendererOptions } from "./api-options";
 import { Component, Notice, WorkspaceLeaf, MarkdownRenderer as ObsidianRenderer, MarkdownPreviewView, loadMermaid, TFile, MarkdownView, View, TAbstractFile, TFolder } from "obsidian";
-import { TabManager } from "src/plugin/utils/tab-manager";
 import * as electron from "electron";
+
+import ObsidianApp from "src/shared/app";
+import { TabManager } from "src/plugin/utils/tab-manager";
 import { Settings, SettingsPage } from "src/plugin/settings/settings";
 import { Path } from "src/plugin/utils/path";
+import { Utils } from "src/plugin/utils/utils";
+import { IconHandler } from "src/plugin/utils/icon-handler";
 import { SimpleFileListGenerator } from "src/plugin/features/simple-list-generator";
+
+import { MarkdownRendererOptions } from "./api-options";
 import { DataviewRenderer } from "./dataview-renderer";
-import { Utils } from "../utils/utils";
-import { IconHandler } from "../utils/icon-handler";
-import ObsidianApp from "src/shared/app";
 
 export namespace MarkdownRendererAPI {
   export const viewableMediaExtensions = [ "png", "jpg", "jpeg", "svg", "gif", "bmp", "ico", "mp4", "mov", "avi", "webm", "mpeg", "mp3", "wav", "ogg", "aac", "pdf", "html", "htm", "json", "txt", "yaml" ];
@@ -230,7 +232,6 @@ export namespace _MarkdownRendererInternal {
       el: HTMLElement
     }[];
 
-    // @ts-ignore
     const newMarkdownEl = batchDocument.body.createDiv({
       attr: {
         // @ts-ignore
@@ -280,7 +281,6 @@ export namespace _MarkdownRendererInternal {
       return failRender(preview.file, "Failed to render preview!");
     }
 
-    // @ts-ignore
     const foldedCallouts: HTMLElement[] = [];
     for (const section of sections) {
       // unfold callouts
@@ -513,7 +513,7 @@ export namespace _MarkdownRendererInternal {
     // @ts-ignore
     if ((useDefaultIcon || !iconProperty || isUnchangedNotEmojiNotHTML) && app?.plugins?.enabledPlugins?.has("obsidian-icon-folder")) {
       // @ts-ignore
-      const fileToIconName = ObsidianApp.app.plugins.plugins["obsidian-icon-folder"].data;
+      const fileToIconName = app.plugins.plugins["obsidian-icon-folder"].data;
       const noteIconsEnabled = fileToIconName.settings.iconsInNotesEnabled ?? false;
 
       // only add icon if rendering note icons is enabled
@@ -935,17 +935,11 @@ export namespace _MarkdownRendererInternal {
     }
 
     logContainer.appendChild(logEl);
-    // @ts-ignore
     logEl.scrollIntoView({ behavior: "instant", block: "end", inline: "end" });
   }
 
   export async function _reportProgress(fraction: number, message: string, subMessage: string, progressColor: string) {
-    if (!batchStarted) {
-      return;
-    }
-
-    // @ts-ignore
-    if (!renderLeaf?.parent?.parent) {
+    if (!batchStarted || !renderLeaf?.parent?.parent) {
       return;
     }
 
@@ -1175,7 +1169,7 @@ export namespace ExportLog {
     debugInfo += `Settings:\n${humanReadableJSON({ ...Settings })}\n\n`;
 
     // @ts-ignore
-    const loadedPlugins = Object.values(ObsidianApp.app.plugins.plugins).filter(plugin => plugin._loaded === true).map(plugin => plugin.manifest.name).join("\n\t");
+    const loadedPlugins = Object.values(app.plugins.plugins).filter(plugin => plugin._loaded === true).map(plugin => plugin.manifest.name).join("\n\t");
     debugInfo += `Enabled Plugins:\n\t${loadedPlugins}`;
 
     return debugInfo;

@@ -9,7 +9,7 @@ export class SnippetStyles extends AssetLoader {
   }
 
   private static getEnabledSnippets(): string[] {
-    /* @ts-ignore */
+    // @ts-ignore
     return app.vault.config?.enabledCssSnippets ?? [];
   }
 

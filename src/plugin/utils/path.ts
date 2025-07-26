@@ -4,9 +4,10 @@ import { FileSystemAdapter } from "obsidian";
 import internal from "stream";
 import { homedir, platform } from "os";
 import { readdir, rmdir } from "fs/promises";
-import { i18n } from "../translations/language";
-import { ExportLog } from "../render-api/render-api";
+
 import ObsidianApp from "src/shared/app";
+import { i18n } from "src/plugin/translations/language";
+import { ExportLog } from "src/plugin/render-api/render-api";
 
 export class Path {
   private static logQueue: { title: string, message: any, type: "info" | "warn" | "error" | "fatal" }[] = [];

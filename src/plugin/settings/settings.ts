@@ -8,10 +8,11 @@ import { ExportPipelineOptions } from "src/plugin/website/pipeline-options";
 import { FlowList } from "src/plugin/features/flow-list";
 import { i18n } from "src/plugin/translations/language";
 import { EmojiStyle } from "src/shared/website-data";
+import { HTMLExporter } from "src/plugin/exporter";
 import supportedStyleIds from "src/assets/plugin-style-ids.json";
 import pluginStylesBlacklist from "src/assets/third-party-styles-blacklist.txt";
 
-import { createDivider, createDropdown, createFileInput, createText, createToggle } from "./settings-components";
+import { createButton, createDivider, createDropdown, createFileInput, createText, createToggle } from "./settings-components";
 
 // #region Settings Definition
 
@@ -82,46 +83,21 @@ export class SettingsPage extends PluginSettingTab {
     header.style.display = "block";
     header.style.marginBottom = "15px";
 
-    const supportContainer = container.createDiv();
-    supportContainer.style.marginBottom = "15px";
-    const supportLink = container.createEl("a");
-    const buttonColor = "3ebba4";
-    const buttonTextColor = "ffffff";
-    // @ts-ignore
-    supportLink.href = `https://www.buymeacoffee.com/nathangeorge`;
-    supportLink.style.height = "40px";
-    supportLink.innerHTML = `<img style="height:40px;" src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=nathangeorge&button_colour=${buttonColor}&font_colour=${buttonTextColor}&font_family=Poppins&outline_colour=${buttonTextColor}&coffee_colour=FFDD00">`;
-    const supportHeader = container.createDiv({ text: lang.support, cls: "setting-item-description" });
-    supportHeader.style.display = "block";
-
-    supportContainer.style.display = "grid";
-    supportContainer.style.gridTemplateColumns = "0.5fr 0.5fr";
-    supportContainer.style.gridTemplateRows = "40px 20px";
-    supportContainer.appendChild(supportLink);
-
-    // debug info button
-    const debugInfoButton = container.createEl("button");
-    const bugIcon = getIcon("bug");
-    if (bugIcon) {
-      debugInfoButton.appendChild(bugIcon);
-    }
-    debugInfoButton.style.height = "100%";
-    debugInfoButton.style.aspectRatio = "1/1";
-    debugInfoButton.style.justifySelf = "end";
-    const debugHeader = container.createDiv({ text: lang.debug, cls: "setting-item-description" });
-    debugHeader.style.display = "block";
-    debugHeader.style.justifySelf = "end";
-    debugInfoButton.addEventListener("click", () => {
-      navigator.clipboard.writeText(ExportLog.getDebugInfo());
-      new Notice("Debug info copied to clipboard!");
-    });
-    supportContainer.appendChild(debugInfoButton);
-    supportContainer.appendChild(supportHeader);
-    supportContainer.appendChild(debugHeader);
-
     // #endregion
 
     const section = container.createEl("div");
+
+    createButton(section, lang.exportVault.title, lang.exportVault.description, {
+      name: lang.exportVault.button,
+      onClick: (button) => {
+        button.setDisabled(true);
+        button.setButtonText(lang.exportVault.buttonWorking);
+        HTMLExporter.export(ObsidianApp.app.vault.getMarkdownFiles()).then(() => {
+          button.setDisabled(false);
+          button.setButtonText(lang.exportVault.button);
+        });
+      },
+    });
 
     createDivider(section);
 
@@ -317,6 +293,14 @@ export class SettingsPage extends PluginSettingTab {
 
     createDropdown(section, lang.logLevel.title, () => Settings.logLevel, value => Settings.logLevel = value as LogLevel, LogLevel, lang.logLevel.description);
 
+    createButton(section, lang.copyDebug.title, lang.copyDebug.description, {
+      icon: "bug",
+      onClick: () => {
+        navigator.clipboard.writeText(ExportLog.getDebugInfo());
+        new Notice("Debug info copied to clipboard!");
+      },
+    });
+
     // #endregion
   }
 
@@ -340,10 +324,10 @@ export class SettingsPage extends PluginSettingTab {
   }
 
   getPluginIDs(): string[] {
-    /* @ts-ignore */
+    // @ts-ignore
     const pluginsArray: string[] = Array.from(app.plugins.enabledPlugins.values()) as string[];
     for (let i = 0; i < pluginsArray.length; i++) {
-      /* @ts-ignore */
+      // @ts-ignore
       if (app.plugins.manifests[pluginsArray[i]] === undefined) {
         pluginsArray.splice(i, 1);
         i--;
@@ -529,7 +513,6 @@ export class SettingsPage extends PluginSettingTab {
     const themes = Object.values(app.customCss.themes) as { name: string, author: string }[];
 
     const themeRecord: Record<string, string> = {
-      // @ts-ignore
       Current: "obsidian-current-theme",
       Default: "Default",
     };

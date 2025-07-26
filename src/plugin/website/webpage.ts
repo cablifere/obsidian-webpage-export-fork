@@ -424,8 +424,11 @@ export class Webpage extends Attachment {
       const mathStyleEl = document.createElement("style");
       mathStyleEl.id = "MJX-CHTML-styles";
       await AssetHandler.mathjaxStyles.load();
-      mathStyleEl.innerHTML = AssetHandler.mathjaxStyles.data as string;
-      this.viewElement?.prepend(mathStyleEl);
+      const mathStyleData = AssetHandler.mathjaxStyles.data as string;
+      if (mathStyleData) {
+        mathStyleEl.innerHTML = mathStyleData;
+        this.viewElement?.prepend(mathStyleEl);
+      }
     }
 
     if (this.exportOptions.includeJS) {

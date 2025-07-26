@@ -10,7 +10,6 @@ export class MathjaxStyles extends AssetLoader {
   }
 
   override async load() {
-    // @ts-ignore
     if (this.mathjaxStylesheet === undefined) {
       this.mathjaxStylesheet = Array.from(document.styleSheets).find(sheet => (sheet.ownerNode instanceof Element && sheet.ownerNode?.id) === ("MJX-CHTML-styles"));
     }

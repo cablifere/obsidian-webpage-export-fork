@@ -154,6 +154,16 @@ export interface i18n {
       title: string
       description: string
     }
+    exportVault: {
+      title: string
+      description: string
+      button: string
+      buttonWorking: string
+    }
+    copyDebug: {
+      title: string
+      description: string
+    }
   }
 }
 
@@ -179,4 +189,4 @@ export const translations: {[key: string]: i18n } = {
   "pt": pt, // Brazilian Portuguese
 };
 
-export let i18n: i18n = getLanguage();
+export const i18n: i18n = getLanguage();

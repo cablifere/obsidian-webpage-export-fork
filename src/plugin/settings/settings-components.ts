@@ -1,8 +1,10 @@
-import { Setting, TextComponent } from "obsidian";
-import { SettingsPage } from "./settings";
+import { Setting, TextComponent, ButtonComponent } from "obsidian";
+
 import { Path } from "src/plugin/utils/path";
 import { FileDialogs } from "src/plugin/utils/file-dialogs";
-import { i18n } from "../translations/language";
+import { i18n } from "src/plugin/translations/language";
+
+import { SettingsPage } from "./settings";
 
 export function createDivider(container: HTMLElement) {
   const hr = container.createEl("hr");
@@ -19,10 +21,8 @@ export function createToggle(container: HTMLElement, name: string, get: () => bo
     setting.setDesc(desc);
   }
   setting.addToggle(toggle => toggle
-  // @ts-ignore
     .setValue(get())
     .onChange(async (value) => {
-      // @ts-ignore
       set(value);
       await SettingsPage.saveSettings();
     }));
@@ -54,6 +54,24 @@ export function createText(container: HTMLElement, name: string, get: () => stri
       errorText.setText(error);
     }));
 
+  return setting;
+}
+
+export function createButton(container: HTMLElement, name: string, desc: string = "", buttonOptions: { name?: string, icon?: string, onClick: (button: ButtonComponent) => void }): Setting {
+  const setting = new Setting(container);
+  setting.setName(name);
+  if (desc !== "") {
+    setting.setDesc(desc);
+  }
+  setting.addButton((button) => {
+    if (buttonOptions.name && buttonOptions.name !== "") {
+      button.setButtonText(buttonOptions.name);
+    }
+    if (buttonOptions.icon && buttonOptions.icon !== "") {
+      button.setIcon(buttonOptions.icon);
+    }
+    button.onClick(() => buttonOptions.onClick(button));
+  });
   return setting;
 }
 

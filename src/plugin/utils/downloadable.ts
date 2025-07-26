@@ -79,7 +79,6 @@ export class Attachment {
   }
 
   constructor(data: string | Buffer, target: Path, source: TFile | undefined | null, options: ExportPipelineOptions) {
-    // @ts-ignore
     if (target.extensionName == "html" && !Object.getPrototypeOf(this).constructor.name.contains("Webpage")) {
       target.setFileName(target.basename + "-content");
     }
