@@ -561,7 +561,7 @@ export namespace _MarkdownRendererInternal {
       const fileCache = ObsidianApp.app.metadataCache.getFileCache(file);
       const frontmatter = fileCache?.frontmatter;
       const titleFromFrontmatter = frontmatter?.[Settings.exportOptions.titleProperty] ?? frontmatter?.["banner_header"]; // banner plugin support
-      title = (titleFromFrontmatter ?? file.basename).toString() ?? "";
+      title = (titleFromFrontmatter ?? file.basename)?.toString() ?? "";
 
       if (title.endsWith(".excalidraw")) {
         title = title.substring(0, title.length - 11);
