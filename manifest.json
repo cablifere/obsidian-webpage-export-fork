@@ -1,7 +1,7 @@
 {
 	"id": "webpage-html-export-fork",
 	"name": "Basic Webpage HTML Export",
-	"version": "1.9.0-3b-fork.2",
+	"version": "1.9.1-fork",
 	"minAppVersion": "1.6.0",
 	"description": "Export markdown files in your vault as HTML documents",
 	"author": "cablifere",
