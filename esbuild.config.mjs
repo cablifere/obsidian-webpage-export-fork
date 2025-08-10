@@ -11,7 +11,7 @@ if you want to view the source, please visit the github repository of this plugi
 */
 `;
 
-const prod = (process.argv[2] === 'production');
+const prod = (process.argv[2] === "production");
 
 // Ensure output directory exists
 const ensureDirectoryExists = (filePath) => {
@@ -24,20 +24,20 @@ const ensureDirectoryExists = (filePath) => {
 
 // Define a custom plugin for post-processing with regex replacements
 const regexReplacementPlugin = {
-  name: 'regex-replacement',
+  name: "regex-replacement",
   setup(build) {
     build.onEnd((result) => {
       console.log("Plugin onEnd hook called");
       if (result.outputFiles) {
         result.outputFiles.forEach(file => {
           console.log(`Processing file: ${file.path}`);
-          
+
           // Ensure the output directory exists
           ensureDirectoryExists(file.path);
-          
+
           // Access the raw text output
           let contents = file.text;
-          
+
           console.log("Original content length:", contents.length);
           // Apply regex replacements
           contents = contents
@@ -45,12 +45,12 @@ const regexReplacementPlugin = {
             .replace(/this\.info_[^=]+=\s*(?:[^;{]|{(?:[^}]*{[^}]*})*[^}]*})*;/gm, "")
             // Remove require statements
             .replace(/var .+?__require\(.+?\);/gm, "")
-			.replace(/import_.+i18n.+;/gm, "'';");
-          
+            .replace(/import_.+i18n.+;/gm, "'';");
+
           console.log("Content length after replacements:", contents.length);
           // Add banner
-          contents = banner + '\n' + contents;
-          
+          contents = banner + "\n" + contents;
+
           // Write the file to disk
           try {
             fs.writeFileSync(file.path, contents);
@@ -70,14 +70,13 @@ const regexReplacementPlugin = {
 // First build
 await esbuild.build({
   entryPoints: ["src/frontend/main/index.txt.ts"],
-  external: ['moment', "src/plugin/*"],
+  external: ["moment", "src/plugin/*"],
   bundle: true,
   minify: false,
   treeShaking: true,
-  platform: 'browser',
+  platform: "browser",
   outdir: "src/frontend/dist",
   tsconfig: "tsconfig.frontend.json",
-  watch: !prod,
   plugins: [regexReplacementPlugin],
   write: false, // Keep this false to allow the plugin to handle file writing
 }).then(() => {
@@ -90,40 +89,39 @@ await esbuild.build({
 // Second build
 await esbuild.build({
   loader: {
-    '.txt.js': 'text',
-    '.txt.css': 'text',
-    '.wasm': 'binary',
-    '.png': 'binary',
+    ".txt.js": "text",
+    ".txt.css": "text",
+    ".wasm": "binary",
+    ".png": "binary",
   },
   banner: {
     js: banner,
   },
-  entryPoints: ['src/plugin/main.ts'],
+  entryPoints: ["src/plugin/main.ts"],
   bundle: true,
-  tsconfig: 'tsconfig.json',
+  tsconfig: "tsconfig.json",
   external: [
-    'obsidian',
-    'electron',
-    '@codemirror/autocomplete',
-    '@codemirror/collab',
-    '@codemirror/commands',
-    '@codemirror/language',
-    '@codemirror/lint',
-    '@codemirror/search',
-    '@codemirror/state',
-    '@codemirror/view',
-    '@lezer/common',
-    '@lezer/highlight',
-    '@lezer/lr',
-    'node:buffer',
-    'node:stream',
+    "obsidian",
+    "electron",
+    "@codemirror/autocomplete",
+    "@codemirror/collab",
+    "@codemirror/commands",
+    "@codemirror/language",
+    "@codemirror/lint",
+    "@codemirror/search",
+    "@codemirror/state",
+    "@codemirror/view",
+    "@lezer/common",
+    "@lezer/highlight",
+    "@lezer/lr",
+    "node:buffer",
+    "node:stream",
     ...builtins
   ],
-  format: 'cjs',
-  watch: !prod,
-  target: 'es2018',
+  format: "cjs",
+  target: "es2018",
   logLevel: "info",
-  sourcemap: prod ? false : 'inline',
+  sourcemap: prod ? false : "inline",
   treeShaking: true,
-  outfile: 'main.js',
+  outfile: "main.js",
 }).catch(() => process.exit(1));

@@ -59,9 +59,9 @@ body.html-export-running :is(.nav-files-container, .side-dock-actions, .workspac
 
 .html-progress-bar
 {
-	width: 300px; 
-	height: 15px; 
-	background-color: transparent; 
+	width: 300px;
+	height: 15px;
+	background-color: transparent;
 	color: var(--interactive-accent);
 }
 
@@ -167,12 +167,12 @@ button.html-progress-cancel
 
 .html-progress-log
 {
-	display:none; 
-	flex-direction: column; 
-	border-left: 1px solid var(--divider-color); 
-	overflow-y: auto; 
-	width: 300px; 
-	max-width: 300px; 
+	display:none;
+	flex-direction: column;
+	border-left: 1px solid var(--divider-color);
+	overflow-y: auto;
+	width: 300px;
+	max-width: 300px;
 	min-width: 300px;
 }
 
@@ -182,38 +182,6 @@ button.html-progress-cancel
 	padding: 0.3em;
 	background-color: rgba(100, 70, 20, 0.1);
 	margin: 0;
-}
-
-/* File picker */
-
-.file-picker .tree-icon {
-    border: 1px solid transparent;
-    margin: 0px 4px 0px 0px;
-    display: flex;
-    align-self: center;
-}
-
-.file-picker .tree-icon :is(svg, img)
-{
-	width: 16px !important;
-	height: 16px !important;
-}
-
-.file-picker .tree-icon *:has(svg, img) {
-    display: contents !important;
-}
-
-.file-picker a.tree-item-self.is-clickable
-{
-	text-decoration: none !important;
-	text-decoration-line: none !important;
-	outline: none !important;
-	border: none !important;
-}
-
-.file-picker .tree-item-inner > p
-{
-	display: contents !important;
 }
 
 .feature-title
@@ -228,51 +196,6 @@ button.html-progress-cancel
 	border-bottom: 1px solid var(--divider-color);
 	margin-bottom: 0.5em;
 }
-
-
-.file-picker *:before
-{
-	display: none !important;
-}
-
-.file-picker .tree-item > .tree-item-self,
-.file-picker .tree-item .tree-item-self:has(> .tree-item-icon)
-{
-	padding-left: 5px !important;
-	display: flex !important;
-	align-items: center !important;
-}
-
-.file-picker .tree-item-self > *:not(.nav-file-tag, .file-checkbox)
-{
-	position: relative !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	translate: none !important;
-}
-
-.file-picker .tree-item-self > .file-checkbox
-{
-	margin-right: 1em;
-}
-
-.file-picker .tree-item-self > .tree-item-inner
-{
-	padding: 0 0.3em !important;
-}
-
-.file-picker .tree-item-children > *
-{
-	margin: 0 !important;
-	padding: 0 !important;
-}
-
-.file-picker .collapse-icon,
-.file-picker .collapse-icon *
-{
-	display: block !important;
-}
-
 
 /* Settings sections */
 details.settings-section
