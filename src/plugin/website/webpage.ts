@@ -355,6 +355,17 @@ export class Webpage extends Attachment {
     }
 
     if (!mediaPathStr.startsWith("http") && !mediaPathStr.startsWith("data:")) {
+      // Use getFilePathFromSrc to properly resolve app:// URLs and other paths
+      const resolvedPath = this.website.getFilePathFromSrc(mediaPathStr, this.source.path);
+      const attachment = this.website.index.getFile(resolvedPath.pathname, true);
+
+      if (attachment) {
+        mediaPathStr = attachment.targetPath.path;
+      } else {
+        // Fallback to resolved path if attachment not found
+        mediaPathStr = resolvedPath.path;
+      }
+
       const mediaPath = Path.joinStrings("", mediaPathStr);
       mediaPathStr = mediaPath.path;
     }
@@ -420,7 +431,7 @@ export class Webpage extends Attachment {
     this.remapEmbedLinks();
 
     // add math styles to the document. They are here and not in <head> because they are unique to each document
-    if (this.exportOptions.addMathjaxStyles && this.type != DocumentType.Attachment) {
+    if (this.exportOptions.addMathjaxStyles && this.type !== DocumentType.Attachment) {
       const mathStyleEl = document.createElement("style");
       mathStyleEl.id = "MJX-CHTML-styles";
       await AssetHandler.mathjaxStyles.load();
@@ -430,6 +441,8 @@ export class Webpage extends Attachment {
         this.viewElement?.prepend(mathStyleEl);
       }
     }
+
+    // TODO load custom scripts
 
     if (this.exportOptions.includeJS) {
       const bodyScript = this.pageDocument.body.createEl("script");
@@ -525,15 +538,24 @@ export class Webpage extends Attachment {
     if (link?.startsWith("?")) {
       return;
     }
+    if (link.startsWith("mailto:")) {
+      return;
+    }
 
     if (link.startsWith("#")) {
       const headerText = (linkEl?.getAttribute("data-href") ?? link).replaceAll(" ", "_").replaceAll(":", "").replaceAll("__", "_").substring(1);
-      let hrefValue = `#${headerText}_${this.headerMap.get(headerText) ?? 0}`;
-      if (!this.exportOptions.relativeHeaderLinks) {
-        hrefValue = this.targetPath + hrefValue;
+
+      // Only apply numbering if this header is in the headerMap (i.e., it's an actual header)
+      if (this.headerMap.has(headerText)) {
+        let hrefValue = `#${headerText}_${this.headerMap.get(headerText)}`;
+        if (!this.exportOptions.relativeHeaderLinks) {
+          hrefValue = this.targetPath + hrefValue;
+        }
+        return hrefValue;
       }
 
-      return hrefValue;
+      // For non-header links (like footnotes), return the link unchanged
+      return link;
     }
 
     const linkSplit = link.split("#")[0].split("?")[0];
@@ -545,7 +567,22 @@ export class Webpage extends Attachment {
       return resolved.path;
     }
 
-    return attachment.targetPath.path;
+    let hash = (linkEl?.getAttribute("data-href") ?? link).split("#")[1] ?? "";
+    if (hash !== "") {
+      hash = "#" + hash
+    };
+
+    if (attachment.targetPath.extensionName === "html") {
+      const headerText = hash.replaceAll(" ", "_").replaceAll(":", "").replaceAll("__", "_").substring(1);
+      // Only apply numbering if this header is in the headerMap
+      if (this.headerMap.has(headerText)) {
+        const headerId = this.headerMap.get(headerText);
+        hash = `#${headerText}_${headerId}`;
+      }
+      // Otherwise keep the hash unchanged (for footnotes, etc.)
+    }
+
+    return attachment.targetPath.path + hash;
   }
 
   readonly headerMap = new Map();
