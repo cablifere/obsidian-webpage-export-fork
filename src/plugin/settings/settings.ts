@@ -182,6 +182,30 @@ export class SettingsPage extends PluginSettingTab {
       },
     );
 
+    createFileInput(
+      section,
+      () => Settings.exportOptions.customScriptPath,
+      value => Settings.exportOptions.customScriptPath = value,
+      {
+        defaultPath: new Path(Settings.exportOptions.customScriptPath),
+        name: lang.customScriptPath.title,
+        description: lang.customScriptPath.description,
+        placeholder: i18n.pathInputPlaceholder,
+        makeRelativeToVault: true,
+        pickFolder: false,
+        validation: path => path.validate({
+          allowEmpty: true,
+          allowAbsolute: true,
+          allowRelative: true,
+          allowFiles: true,
+          allowDirectories: false,
+          requireExists: true,
+          requireExtensions: ["js"],
+        }),
+        browseButton: true,
+      },
+    );
+
     createToggle(section, lang.slugifyPaths.title, () => Settings.exportOptions.slugifyPaths, value => Settings.exportOptions.slugifyPaths = value, lang.slugifyPaths.description);
 
     createToggle(section, lang.flattenExportPaths.title, () => Settings.exportOptions.flattenExportPaths, value => Settings.exportOptions.flattenExportPaths = value, lang.flattenExportPaths.description);

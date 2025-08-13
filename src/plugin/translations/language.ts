@@ -38,6 +38,10 @@ export interface i18n {
       title: string
       description: string
     }
+    customScriptPath: {
+      title: string
+      description: string
+    }
     styleOptionsSection: {
       title: string
       description: string

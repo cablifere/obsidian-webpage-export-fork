@@ -442,8 +442,6 @@ export class Webpage extends Attachment {
       }
     }
 
-    // TODO load custom scripts
-
     if (this.exportOptions.includeJS) {
       const bodyScript = this.pageDocument.body.createEl("script");
       bodyScript.setAttribute("defer", "");
@@ -647,8 +645,13 @@ export class Webpage extends Attachment {
 <meta property="og:url" content="${this.fullURL}">
 <meta property="og:image" content="${this.coverImageURL}">
 `;
-    if (this.author && this.author != "") {
+    if (this.author && this.author !== "") {
       head += `<meta name="author" content="${this.author}">`;
+    }
+
+    if (this.exportOptions.customScriptPath && this.exportOptions.customScriptPath !== "") {
+      const customScriptPath = new Path(this.exportOptions.customScriptPath).fullName;
+      head += `<script src="${Shared.scriptsFolderName}/${customScriptPath}" />`;
     }
 
     this.pageDocument.head.innerHTML = head + this.pageDocument.head.innerHTML;

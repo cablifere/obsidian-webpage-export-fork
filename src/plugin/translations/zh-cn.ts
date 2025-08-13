@@ -34,6 +34,10 @@ export const language: i18n = {
       title: "",
       description: "",
     },
+    customScriptPath: {
+      title: "",
+      description: "",
+    },
     styleOptionsSection: {
       title: "样式选项",
       description: "配置导出中包含的样式",

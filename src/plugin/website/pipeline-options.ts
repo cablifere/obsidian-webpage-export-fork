@@ -28,6 +28,11 @@ export class ExportPipelineOptions extends MarkdownRendererOptions {
   customHeadSourcePath: string = "";
 
   /**
+   * Custom script path
+   */
+  customScriptPath: string = "";
+
+  /**
    * Document section options
    */
   documentWidth: string = "40em";

@@ -34,6 +34,10 @@ export const language: i18n = {
       title: "",
       description: "",
     },
+    customScriptPath: {
+      title: "",
+      description: "",
+    },
     styleOptionsSection: {
       title: "Opzioni di Stile",
       description: "Configura quali stili includere nell'esportazione",

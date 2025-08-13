@@ -20,6 +20,7 @@ import { ThemeStyles } from "./theme-styles";
 import { SnippetStyles } from "./snippet-styles";
 import { MathjaxStyles } from "./mathjax-styles";
 import { CustomHeadContent } from "./custom-head-content";
+import { CustomScript } from "./custom-script";
 import { GlobalVariableStyles } from "./global-variable-styles";
 import { Favicon } from "./favicon";
 import { FetchBuffer } from "./local-fetch-buffer";
@@ -106,6 +107,7 @@ export class AssetHandler {
   // other
   public static favicon: Favicon;
   public static customHeadContent: CustomHeadContent;
+  public static customScript: CustomScript;
   public static mainJsModTime: number = 0;
   public static mainJsPath: Path;
 
@@ -132,10 +134,11 @@ export class AssetHandler {
     this.themeLoadJS = new AssetLoader("theme-load.js", themeLoadJS, null, AssetType.Script, InlinePolicy.Inline, true, Mutability.Static, LoadMethod.Defer);
     this.favicon = new Favicon();
     this.customHeadContent = new CustomHeadContent();
+    this.customScript = new CustomScript();
 
     this.initPaths();
     // by default all static assets have a modified time the same as main.js
-    this.mainJsPath = this.vaultPluginsPath.joinString("webpage-html-export/main.js");
+    this.mainJsPath = this.vaultPluginsPath.joinString("webpage-html-export-fork/main.js");
     this.mainJsModTime = this.mainJsPath.stat?.mtimeMs ?? 0;
     this.staticAssets.forEach(asset => asset.sourceStat.mtime = this.mainJsModTime);
 
@@ -152,7 +155,7 @@ export class AssetHandler {
     this.exportOptions = options;
 
     // remove all temporary assets from allAssets
-    this.allAssets = this.allAssets.filter(asset => asset.mutability != Mutability.Temporary);
+    this.allAssets = this.allAssets.filter(asset => asset.mutability !== Mutability.Temporary);
     this.temporaryAssets = [];
 
     const loadPromises = [];
@@ -168,28 +171,28 @@ export class AssetHandler {
   }
 
   public static getAssetsOfType(type: AssetType): AssetLoader[] {
-    let assets = this.allAssets.filter(asset => asset.type == type);
-    assets = assets.concat(this.allAssets.map(asset => asset.childAssets).flat().filter(asset => asset.type == type));
+    let assets = this.allAssets.filter(asset => asset.type === type);
+    assets = assets.concat(this.allAssets.map(asset => asset.childAssets).flat().filter(asset => asset.type === type));
     return assets;
   }
 
   public static getAssetsOfInlinePolicy(inlinePolicy: InlinePolicy): AssetLoader[] {
-    let assets = this.allAssets.filter(asset => asset.inlinePolicy == inlinePolicy);
-    assets = assets.concat(this.allAssets.map(asset => asset.childAssets).flat().filter(asset => asset.inlinePolicy == inlinePolicy));
+    let assets = this.allAssets.filter(asset => asset.inlinePolicy === inlinePolicy);
+    assets = assets.concat(this.allAssets.map(asset => asset.childAssets).flat().filter(asset => asset.inlinePolicy === inlinePolicy));
     return assets;
   }
 
   private static filterDownloads(downloads: AssetLoader[], options: ExportPipelineOptions): AssetLoader[] {
     if (!options.includeCSS) {
-      downloads = downloads.filter(asset => asset.type != AssetType.Style);
+      downloads = downloads.filter(asset => asset.type !== AssetType.Style);
     }
 
     if (!options.includeJS) {
-      downloads = downloads.filter(asset => asset.type != AssetType.Script);
+      downloads = downloads.filter(asset => asset.type !== AssetType.Script);
     }
 
     // remove duplicates
-    downloads = downloads.filter((asset, index, self) => self.findIndex(t => t.targetPath.path == asset.targetPath.path) === index);
+    downloads = downloads.filter((asset, index, self) => self.findIndex(t => t.targetPath.path === asset.targetPath.path) === index);
 
     // remove assets with no content
     downloads = downloads.filter(asset => asset.data && asset.data.length > 0);
@@ -249,7 +252,7 @@ export class AssetHandler {
 
   /* Takes a style sheet string and creates assets from every font or image url embedded in it */
   public static async getStyleChildAssets(asset: AssetLoader, makeBase64External: boolean = false): Promise<string> {
-    if (typeof asset.data != "string") {
+    if (typeof asset.data !== "string") {
       throw new Error("Asset content is not a string");
     }
 
@@ -271,7 +274,7 @@ export class AssetHandler {
         continue;
       }
 
-      if (url == "") {
+      if (url === "") {
         continue;
       }
 
@@ -302,7 +305,7 @@ export class AssetHandler {
           const buffer = Buffer.from(data, "base64");
           const dataHash = hash(data);
           let filename = `${dataHash}.${extension}`;
-          if (extension == "") {
+          if (extension === "") {
             const type = await fileTypeFromBuffer(buffer);
             if (type) {
               extension = type.ext;
@@ -316,7 +319,7 @@ export class AssetHandler {
           const loadPromise = childAsset.load();
           promises.push(loadPromise);
           loadPromise.then(() => {
-            if (childAsset.data == undefined || childAsset.data == null || childAsset.data.length == 0) {
+            if (childAsset.data === undefined || childAsset.data === null || childAsset.data.length === 0) {
               return;
             }
 
@@ -338,7 +341,7 @@ export class AssetHandler {
       const loadPromise = childAsset.load();
       promises.push(loadPromise);
       loadPromise.then(() => {
-        if (childAsset.data == undefined || childAsset.data == null || childAsset.data.length == 0) {
+        if (childAsset.data === undefined || childAsset.data === null || childAsset.data.length === 0) {
           return;
         }
 
