@@ -30,10 +30,6 @@ export const language: i18n = {
       title: "文档",
       description: "文档的宽度",
     },
-    customHeadSourcePath: {
-      title: "",
-      description: "",
-    },
     customScriptPath: {
       title: "",
       description: "",

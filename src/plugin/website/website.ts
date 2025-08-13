@@ -37,18 +37,6 @@ export class Website {
   private async buildTemplate(): Promise<void> {
     const template = this.webpageTemplate;
     await template.loadLayout();
-
-    // inject custom head content
-    if (this.exportOptions.customHeadSourcePath !== "") {
-      const string = AssetHandler.customHeadContent.getHTML(this.exportOptions);
-      template.insertFeatureString(string, new InsertedFeatureOptions(
-        "custom-head",
-        new FeatureRelation(
-          "head",
-          RelationType.End,
-        ),
-      ));
-    }
   }
 
   private findCommonRootPath(files: { path: string }[]): string {
@@ -187,7 +175,7 @@ export class Website {
 
       // only render the updated and new files
       if (webpage.outputData.hash !== this.index.oldWebsiteData?.webpages[webpage.outputData.fullURL]?.hash) {
-        ExportLog.log(`"${webpage.outputData.pathToRoot}" updated.`);
+        ExportLog.log(`"${webpage.outputData.fullURL}" updated.`);
         ExportLog.log(`current: ${webpage.outputData.hash} previous: ${this.index.oldWebsiteData?.webpages[webpage.outputData.fullURL]?.hash}`)
         // save the file and then dispose of the webpage
         await webpage.download();

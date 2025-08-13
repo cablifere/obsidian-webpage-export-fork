@@ -650,8 +650,7 @@ export class Webpage extends Attachment {
     }
 
     if (this.exportOptions.customScriptPath && this.exportOptions.customScriptPath !== "") {
-      const customScriptPath = new Path(this.exportOptions.customScriptPath).fullName;
-      head += `<script src="${Shared.scriptsFolderName}/${customScriptPath}" />`;
+      head += `<script src="${Shared.scriptsFolderName}/custom-script.js"></script>`;
     }
 
     this.pageDocument.head.innerHTML = head + this.pageDocument.head.innerHTML;

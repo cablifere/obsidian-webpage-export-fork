@@ -19,7 +19,6 @@ import { OtherPluginStyles } from "./other-plugin-styles";
 import { ThemeStyles } from "./theme-styles";
 import { SnippetStyles } from "./snippet-styles";
 import { MathjaxStyles } from "./mathjax-styles";
-import { CustomHeadContent } from "./custom-head-content";
 import { CustomScript } from "./custom-script";
 import { GlobalVariableStyles } from "./global-variable-styles";
 import { Favicon } from "./favicon";
@@ -106,7 +105,6 @@ export class AssetHandler {
 
   // other
   public static favicon: Favicon;
-  public static customHeadContent: CustomHeadContent;
   public static customScript: CustomScript;
   public static mainJsModTime: number = 0;
   public static mainJsPath: Path;
@@ -133,7 +131,6 @@ export class AssetHandler {
     this.deferredCSS = new AssetLoader("deferred.css", deferredCSS, null, AssetType.Style, InlinePolicy.InlineHead, true, Mutability.Static, LoadMethod.Defer, -1000);
     this.themeLoadJS = new AssetLoader("theme-load.js", themeLoadJS, null, AssetType.Script, InlinePolicy.Inline, true, Mutability.Static, LoadMethod.Defer);
     this.favicon = new Favicon();
-    this.customHeadContent = new CustomHeadContent();
     this.customScript = new CustomScript();
 
     this.initPaths();

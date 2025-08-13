@@ -30,10 +30,6 @@ export const language: i18n = {
       title: "Document width",
       description: "The width of the document",
     },
-    customHeadSourcePath: {
-      title: "Custom HTML / JS",
-      description: "Insert a given .html file onto the page which can include custom JS or CSS",
-    },
     customScriptPath: {
       title: "Custom JS",
       description: "Insert a custom .js file onto the page",

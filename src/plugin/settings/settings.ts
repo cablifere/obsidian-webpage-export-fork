@@ -160,30 +160,6 @@ export class SettingsPage extends PluginSettingTab {
 
     createFileInput(
       section,
-      () => Settings.exportOptions.customHeadSourcePath,
-      value => Settings.exportOptions.customHeadSourcePath = value,
-      {
-        defaultPath: new Path(Settings.exportOptions.customHeadSourcePath),
-        name: lang.customHeadSourcePath.title,
-        description: lang.customHeadSourcePath.description,
-        placeholder: i18n.pathInputPlaceholder,
-        makeRelativeToVault: true,
-        pickFolder: false,
-        validation: path => path.validate({
-          allowEmpty: true,
-          allowAbsolute: true,
-          allowRelative: true,
-          allowFiles: true,
-          allowDirectories: false,
-          requireExists: true,
-          requireExtensions: ["html"],
-        }),
-        browseButton: true,
-      },
-    );
-
-    createFileInput(
-      section,
       () => Settings.exportOptions.customScriptPath,
       value => Settings.exportOptions.customScriptPath = value,
       {

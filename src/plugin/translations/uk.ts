@@ -32,10 +32,6 @@ export const language: i18n = {
       title: "Документ",
       description: "Ширина документа",
     },
-    customHeadSourcePath: {
-      title: "",
-      description: "",
-    },
     customScriptPath: {
       title: "",
       description: "",

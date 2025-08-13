@@ -34,10 +34,6 @@ export interface i18n {
       title: string
       description: string
     }
-    customHeadSourcePath: {
-      title: string
-      description: string
-    }
     customScriptPath: {
       title: string
       description: string

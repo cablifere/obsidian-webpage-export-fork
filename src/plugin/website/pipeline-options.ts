@@ -23,11 +23,6 @@ export class ExportPipelineOptions extends MarkdownRendererOptions {
   // Options for the features
 
   /**
-   * Custom head source path
-   */
-  customHeadSourcePath: string = "";
-
-  /**
    * Custom script path
    */
   customScriptPath: string = "";
