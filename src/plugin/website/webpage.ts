@@ -649,10 +649,6 @@ export class Webpage extends Attachment {
       head += `<meta name="author" content="${this.author}">`;
     }
 
-    if (this.exportOptions.customScriptPath && this.exportOptions.customScriptPath !== "") {
-      head += `<script src="${Shared.scriptsFolderName}/custom-script.js"></script>`;
-    }
-
     this.pageDocument.head.innerHTML = head + this.pageDocument.head.innerHTML;
   }
 

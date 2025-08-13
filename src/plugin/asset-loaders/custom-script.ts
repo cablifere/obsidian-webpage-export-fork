@@ -7,7 +7,7 @@ import { AssetType, InlinePolicy, LoadMethod, Mutability } from "./asset-types";
 
 export class CustomScript extends AssetLoader {
   constructor() {
-    super("custom-script.js", "", null, AssetType.Script, InlinePolicy.AutoHead, false, Mutability.Dynamic, LoadMethod.Async, 100000000000);
+    super("custom-script.js", "", null, AssetType.Script, InlinePolicy.AutoHead, true, Mutability.Dynamic, LoadMethod.Async, 100000000000);
   }
 
   override async load() {
