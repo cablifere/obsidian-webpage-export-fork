@@ -5,7 +5,7 @@ import { AssetType, InlinePolicy, LoadMethod, Mutability } from "./asset-types";
 
 export class SnippetStyles extends AssetLoader {
   constructor() {
-    super("snippets.css", "", null, AssetType.Style, InlinePolicy.AutoHead, true, Mutability.Dynamic, LoadMethod.Async, 20);
+    super("snippets.css", "", null, AssetType.Style, InlinePolicy.AutoHead, false, Mutability.Dynamic, LoadMethod.Async, 20);
   }
 
   private static getEnabledSnippets(): string[] {

@@ -9,7 +9,7 @@ export class OtherPluginStyles extends AssetLoader {
   private lastEnabledPluginStyles: string[] = [];
 
   constructor() {
-    super("other-plugins.css", "", null, AssetType.Style, InlinePolicy.AutoHead, true, Mutability.Dynamic, LoadMethod.Async, 9);
+    super("other-plugins.css", "", null, AssetType.Style, InlinePolicy.AutoHead, false, Mutability.Dynamic, LoadMethod.Async, 9);
   }
 
   public static async getStyleForPlugin(pluginName: string): Promise<string> {
