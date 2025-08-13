@@ -559,8 +559,8 @@ export namespace _MarkdownRendererInternal {
       return {
         title: "NULL ERROR",
         isDefault: true,
-      },
-    };
+      };
+    }
 
     let title = file.name;
     let isDefaultTitle = true;
