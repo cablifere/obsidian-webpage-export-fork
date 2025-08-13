@@ -171,6 +171,8 @@ export class Website {
       // only save the updated and new attachments
       for (const attachment of attachments) {
         if (attachment.hash !== this.index.oldWebsiteData?.fileInfo[attachment.targetPath.path]?.hash) {
+          ExportLog.log(`"${attachment.sourcePath}" updated.`);
+          ExportLog.log(`current: ${attachment.hash} previous: ${this.index.oldWebsiteData?.fileInfo[attachment.targetPath.path]?.hash}`)
           await attachment.download();
         }
       }
@@ -185,6 +187,8 @@ export class Website {
 
       // only render the updated and new files
       if (webpage.outputData.hash !== this.index.oldWebsiteData?.webpages[webpage.outputData.fullURL]?.hash) {
+        ExportLog.log(`"${webpage.outputData.pathToRoot}" updated.`);
+        ExportLog.log(`current: ${webpage.outputData.hash} previous: ${this.index.oldWebsiteData?.webpages[webpage.outputData.fullURL]?.hash}`)
         // save the file and then dispose of the webpage
         await webpage.download();
         if (this.exportOptions.autoDisposeWebpages) {

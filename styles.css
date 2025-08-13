@@ -1,25 +1,23 @@
 /* THIS FILE IS NOT EXPORTED WITH THE HTML FILE! */
 
-body.html-export-running .workspace-tabs:has(.html-progress-wrapper) .workspace-tab-header-container
-{
+body.html-export-running .workspace-tabs:has(.html-progress-wrapper) .workspace-tab-header-container {
 	display: none !important;
 }
 
-body.html-export-running :is(.nav-files-container, .side-dock-actions, .workspace-tab-header-container, .workspace-drawer-vault-actions, .nav-buttons-container)
-{
+body.html-export-running :is(.nav-files-container, .side-dock-actions, .workspace-tab-header-container, .workspace-drawer-vault-actions, .nav-buttons-container) {
 	opacity: 0.2 !important;
 	pointer-events: none !important;
 }
 
 /* Flow list used on the settings page */
 .flow-list {
-    contain: inline-size;
-    gap: 0.2em;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    width: -webkit-fill-available;
+	contain: inline-size;
+	gap: 0.2em;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	width: -webkit-fill-available;
 	background-color: var(--background-secondary);
 	border: 1px solid var(--divider-color);
 	border-radius: 5px;
@@ -27,38 +25,36 @@ body.html-export-running :is(.nav-files-container, .side-dock-actions, .workspac
 }
 
 .flow-item {
-    display: flex;
+	display: flex;
 	flex-direction: row;
-    border-radius: 100px;
+	border-radius: 100px;
 	border: 1px solid var(--divider-color);
-    font-size: 0.9em;
-    height: min-content;
-    width: max-content;
-    padding: 3px 8px 3px 8px;
-    margin: 0.1em 0em 0.1em 0.0em;
-    background-color: var(--background-primary);
+	font-size: 0.9em;
+	height: min-content;
+	width: max-content;
+	padding: 3px 8px 3px 8px;
+	margin: 0.1em 0em 0.1em 0.0em;
+	background-color: var(--background-primary);
 	align-items: center;
 }
 
 .flow-item:has(input:checked) {
-    background-color: hsla(var(--color-accent-hsl), 0.3);
+	background-color: hsla(var(--color-accent-hsl), 0.3);
 }
 
 .flow-item input[type="checkbox"] {
-    padding: 0;
-    margin: 0.1em;
-    margin-right: 0.5em;
+	padding: 0;
+	margin: 0.1em;
+	margin-right: 0.5em;
 }
 
-.webpage-html-settings .setting-item.is-disabled
-{
+.webpage-html-settings .setting-item.is-disabled {
 	opacity: 0.5;
 }
 
 /* Progressbar used in the render progress */
 
-.html-progress-bar
-{
+.html-progress-bar {
 	width: 300px;
 	height: 15px;
 	background-color: transparent;
@@ -66,17 +62,16 @@ body.html-export-running :is(.nav-files-container, .side-dock-actions, .workspac
 }
 
 .html-progress-bar::-webkit-progress-bar {
-    background-color: var(--background-secondary);
-    border-radius: 500px;
+	background-color: var(--background-secondary);
+	border-radius: 500px;
 }
 
 .html-progress-bar::-webkit-progress-value {
-    background-color: currentColor;
-    border-radius: 500px;
+	background-color: currentColor;
+	border-radius: 500px;
 }
 
-button.html-progress-cancel
-{
+button.html-progress-cancel {
 	background-color: var(--color-red);
 	color: white;
 	border: none;
@@ -85,9 +80,7 @@ button.html-progress-cancel
 	margin-top: 1em;
 }
 
-
-.file-list-wrapper
-{
+.file-list-wrapper {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
@@ -95,8 +88,7 @@ button.html-progress-cancel
 	margin-left: 1em;
 }
 
-.file-list
-{
+.file-list {
 	display: flex;
 	flex-direction: column;
 	overflow: auto;
@@ -108,8 +100,7 @@ button.html-progress-cancel
 	padding-bottom: 4em;
 }
 
-.file-list-title
-{
+.file-list-title {
 	font-size: 20px;
 	padding: 0.2em 0 0.5em 0;
 	margin-right: 2em;
@@ -122,15 +113,13 @@ button.html-progress-cancel
     align-items: center;
 }
 
-.file-list-item-icon
-{
+.file-list-item-icon {
 	margin-right: 0.5em;
 	width: 1.1em !important;
 	height: 1.1em !important;
 }
 
-.html-progress-wrapper
-{
+.html-progress-wrapper {
 	position: absolute;
 	height: 100%;
 	min-width: 100%;
@@ -140,19 +129,16 @@ button.html-progress-cancel
 	z-index: 1000;
 }
 
-.workspace-tab-container:has(.html-progress-wrapper)
-{
+.workspace-tab-container:has(.html-progress-wrapper) {
 	position: relative;
 }
 
-.html-progress-content
-{
+.html-progress-content {
 	display: flex;
 	height: 100%;
 }
 
-.html-progress-inner
-{
+.html-progress-inner {
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
@@ -160,13 +146,11 @@ button.html-progress-cancel
 	justify-content: center;
 }
 
-.html-progress-sub
-{
+.html-progress-sub {
 	margin-block-start: 2em;
 }
 
-.html-progress-log
-{
+.html-progress-log {
 	display:none;
 	flex-direction: column;
 	border-left: 1px solid var(--divider-color);
@@ -176,51 +160,44 @@ button.html-progress-cancel
 	min-width: 300px;
 }
 
-.html-progress-log > h1
-{
+.html-progress-log > h1 {
 	color: var(--color-yellow);
 	padding: 0.3em;
 	background-color: rgba(100, 70, 20, 0.1);
 	margin: 0;
 }
 
-.feature-title
-{
+.feature-title {
   margin: 0 0 1em 0;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
-.select-all
-{
+.select-all {
 	border-bottom: 1px solid var(--divider-color);
 	margin-bottom: 0.5em;
 }
 
 /* Settings sections */
-details.settings-section
-{
+details.settings-section {
 	padding-left: 2em;
 	border-left: 1px solid var(--interactive-accent);
 }
 
-details.settings-section > summary
-{
+details.settings-section > summary {
 	display: flex;
 	align-items: center;
 	gap: 1em;
 	margin-left: -1em;
 }
 
-details.settings-section > summary > svg
-{
+details.settings-section > summary > svg {
 	min-width: 18px;
 	min-height: 18px;
 	rotate: 0deg;
 	transition: rotate 0.2s;
 }
 
-details.settings-section[open] > summary > svg
-{
+details.settings-section[open] > summary > svg {
 	rotate: 90deg;
 }
